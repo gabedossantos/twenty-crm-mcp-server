@@ -187,7 +187,12 @@ class TwentyCRMServer {
               properties: {
                 name: { type: "string", description: "Company name (required)" },
                 domainUrl: { type: "string", description: "Company website URL" },
-                address: { type: "string", description: "Company address" },
+                addressStreet1: { type: "string", description: "Address street line 1" },
+                addressStreet2: { type: "string", description: "Address street line 2" },
+                addressCity: { type: "string", description: "City" },
+                addressPostcode: { type: "string", description: "Postcode/ZIP" },
+                addressState: { type: "string", description: "State/Province" },
+                addressCountry: { type: "string", description: "Country" },
                 employees: { type: "number", description: "Number of employees" },
                 linkedinUrl: { type: "string", description: "LinkedIn company URL" },
                 xUrl: { type: "string", description: "X/Twitter URL" },
@@ -245,7 +250,12 @@ class TwentyCRMServer {
                 id: { type: "string", description: "Company ID (required)" },
                 name: { type: "string", description: "Company name" },
                 domainUrl: { type: "string", description: "Company website URL" },
-                address: { type: "string", description: "Company address" },
+                addressStreet1: { type: "string", description: "Address street line 1" },
+                addressStreet2: { type: "string", description: "Address street line 2" },
+                addressCity: { type: "string", description: "City" },
+                addressPostcode: { type: "string", description: "Postcode/ZIP" },
+                addressState: { type: "string", description: "State/Province" },
+                addressCountry: { type: "string", description: "Country" },
                 employees: { type: "number", description: "Number of employees" },
                 linkedinUrl: { type: "string", description: "LinkedIn company URL" },
                 xUrl: { type: "string", description: "X/Twitter URL" },
@@ -367,7 +377,7 @@ class TwentyCRMServer {
       input.linkedinLink = {
         primaryLinkLabel: "",
         primaryLinkUrl: data.linkedinUrl,
-        additionalLinks: []
+        secondaryLinks: []
       };
     }
 
@@ -376,7 +386,7 @@ class TwentyCRMServer {
       input.xLink = {
         primaryLinkLabel: "",
         primaryLinkUrl: data.xUrl,
-        additionalLinks: []
+        secondaryLinks: []
       };
     }
 
@@ -608,7 +618,14 @@ class TwentyCRMServer {
           domainName {
             primaryLinkUrl
           }
-          address
+          address {
+            addressStreet1
+            addressStreet2
+            addressCity
+            addressPostcode
+            addressState
+            addressCountry
+          }
           employees
           linkedinLink {
             primaryLinkUrl
@@ -636,7 +653,7 @@ class TwentyCRMServer {
       input.domainName = {
         primaryLinkLabel: "",
         primaryLinkUrl: data.domainUrl,
-        additionalLinks: []
+        secondaryLinks: []
       };
     }
 
@@ -645,7 +662,7 @@ class TwentyCRMServer {
       input.linkedinLink = {
         primaryLinkLabel: "",
         primaryLinkUrl: data.linkedinUrl,
-        additionalLinks: []
+        secondaryLinks: []
       };
     }
 
@@ -654,7 +671,7 @@ class TwentyCRMServer {
       input.xLink = {
         primaryLinkLabel: "",
         primaryLinkUrl: data.xUrl,
-        additionalLinks: []
+        secondaryLinks: []
       };
     }
 
@@ -666,8 +683,19 @@ class TwentyCRMServer {
       };
     }
 
+    // Add address if any address field is provided
+    if (data.addressStreet1 || data.addressStreet2 || data.addressCity ||
+        data.addressPostcode || data.addressState || data.addressCountry) {
+      input.address = {};
+      if (data.addressStreet1) input.address.addressStreet1 = data.addressStreet1;
+      if (data.addressStreet2) input.address.addressStreet2 = data.addressStreet2;
+      if (data.addressCity) input.address.addressCity = data.addressCity;
+      if (data.addressPostcode) input.address.addressPostcode = data.addressPostcode;
+      if (data.addressState) input.address.addressState = data.addressState;
+      if (data.addressCountry) input.address.addressCountry = data.addressCountry;
+    }
+
     // Add other simple fields
-    if (data.address) input.address = data.address;
     if (data.employees !== undefined) input.employees = data.employees;
     if (data.idealCustomerProfile !== undefined) input.idealCustomerProfile = data.idealCustomerProfile;
 
@@ -692,7 +720,14 @@ class TwentyCRMServer {
           domainName {
             primaryLinkUrl
           }
-          address
+          address {
+            addressStreet1
+            addressStreet2
+            addressCity
+            addressPostcode
+            addressState
+            addressCountry
+          }
           employees
           linkedinLink {
             primaryLinkUrl
@@ -736,7 +771,14 @@ class TwentyCRMServer {
               domainName {
                 primaryLinkUrl
               }
-              address
+              address {
+                addressStreet1
+                addressStreet2
+                addressCity
+                addressPostcode
+                addressState
+                addressCountry
+              }
               employees
               annualRecurringRevenue {
                 amountMicros
@@ -784,7 +826,14 @@ class TwentyCRMServer {
           domainName {
             primaryLinkUrl
           }
-          address
+          address {
+            addressStreet1
+            addressStreet2
+            addressCity
+            addressPostcode
+            addressState
+            addressCountry
+          }
           employees
           annualRecurringRevenue {
             amountMicros
@@ -827,9 +876,21 @@ class TwentyCRMServer {
       };
     }
 
+    // Update address if any address field is provided
+    if (updates.addressStreet1 !== undefined || updates.addressStreet2 !== undefined ||
+        updates.addressCity !== undefined || updates.addressPostcode !== undefined ||
+        updates.addressState !== undefined || updates.addressCountry !== undefined) {
+      input.address = {};
+      if (updates.addressStreet1 !== undefined) input.address.addressStreet1 = updates.addressStreet1;
+      if (updates.addressStreet2 !== undefined) input.address.addressStreet2 = updates.addressStreet2;
+      if (updates.addressCity !== undefined) input.address.addressCity = updates.addressCity;
+      if (updates.addressPostcode !== undefined) input.address.addressPostcode = updates.addressPostcode;
+      if (updates.addressState !== undefined) input.address.addressState = updates.addressState;
+      if (updates.addressCountry !== undefined) input.address.addressCountry = updates.addressCountry;
+    }
+
     // Add other simple fields
     if (updates.name !== undefined) input.name = updates.name;
-    if (updates.address !== undefined) input.address = updates.address;
     if (updates.employees !== undefined) input.employees = updates.employees;
     if (updates.idealCustomerProfile !== undefined) input.idealCustomerProfile = updates.idealCustomerProfile;
 
