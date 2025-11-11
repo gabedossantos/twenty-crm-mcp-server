@@ -8,11 +8,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "start:clean": "node dist/index.js",
-    "start:legacy": "node twenty-mcp-clean.js",
     "dev": "tsx src/index.ts",
     "dev:watch": "tsx watch src/index.ts",
-    "dev:legacy": "node --inspect twenty-mcp-clean.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
