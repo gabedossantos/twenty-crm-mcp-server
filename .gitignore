@@ -47,5 +47,6 @@ Thumbs.db
 tmp/
 temp/
 
-# API response dumps
+# API response dumps (keep locally as reference, don't commit)
+scenerii_twenty_rest_response.json
 *.response.json
