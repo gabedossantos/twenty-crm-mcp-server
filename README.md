@@ -1,192 +1,189 @@
-# Twenty CRM MCP Server v2.0 (Clean Implementation)
+<div align="center">
 
-**A clean, GraphQL-based Model Context Protocol server for Twenty CRM**
+# 🤖 Twenty CRM MCP Server
 
-This is a complete rewrite of the Twenty CRM MCP server with:
-- ✅ **Correct API structure** based on actual Twenty CRM schema
-- ✅ **GraphQL instead of REST** for easier handling of nested objects
-- ✅ **Proper composite field support** (name, emails, phones, links)
-- ✅ **Clean, maintainable code** with proper error handling
+**Connect [Twenty CRM](https://twenty.com) with Claude and AI Assistants via Model Context Protocol**
 
-## 🔥 Key Improvements Over v1
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
+[![Twenty CRM](https://img.shields.io/badge/Twenty_CRM-Compatible-blue)](https://twenty.com)
+[![MCP](https://img.shields.io/badge/MCP-1.0-purple)](https://modelcontextprotocol.io/)
 
-### Fixed Issues:
-1. **Person Creation** - Now uses correct nested structure:
-   ```javascript
-   // ❌ OLD (broken)
-   { firstName: "John", lastName: "Doe", email: "john@example.com" }
+*Manage your CRM data using natural language through Claude, with full support for Twenty's composite fields and GraphQL API.*
 
-   // ✅ NEW (correct)
-   {
-     name: { firstName: "John", lastName: "Doe" },
-     emails: { primaryEmail: "john@example.com" }
-   }
-   ```
+[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [API Reference](#-api-reference) • [Contributing](#-contributing)
 
-2. **Company Creation** - Properly handles links and currency:
-   ```javascript
-   // ❌ OLD (broken)
-   { domainName: "example.com", annualRecurringRevenue: 5000000 }
+</div>
 
-   // ✅ NEW (correct)
-   {
-     domainName: { primaryLinkUrl: "https://example.com" },
-     annualRecurringRevenue: { amountMicros: 5000000000000, currencyCode: "USD" }
-   }
-   ```
+---
 
-3. **GraphQL instead of REST** - Much easier to work with nested objects
+## ✨ Features
+
+- 🚀 **GraphQL-Native** - Built on Twenty's GraphQL API for robust, type-safe operations
+- 🔄 **Full CRUD Support** - Create, read, update, and list people and companies
+- 🏗️ **Composite Fields** - Proper handling of nested objects (name, emails, phones, addresses, links)
+- 💰 **Currency Support** - Automatic conversion for Annual Recurring Revenue
+- 🔍 **Smart Search** - Filter and search across all CRM objects
+- ⚡ **Real-time Updates** - Changes sync immediately with your Twenty instance
+- 🛡️ **Type-Safe** - Leverages GraphQL's type system for reliability
+- 📖 **Well-Documented** - Comprehensive guides and examples
+
+## 🎯 What You Can Do
+
+**Manage People:**
+```
+"Create a contact named Sarah Johnson, email sarah@techco.com, phone +1-555-0100"
+"Find all people working at TechCo"
+"Update John's job title to Senior Developer"
+"List the first 10 contacts in the database"
+```
+
+**Manage Companies:**
+```
+"Add a company called Acme Corp with website acme.com, 50 employees, and ARR of $2M"
+"Show me all companies in San Francisco"
+"Update TechStartup's address to 123 Main St, Berlin, Germany"
+"List all ideal customer profile companies"
+```
 
 ## 🚀 Installation
 
-### 1. Prerequisites
-- Node.js 18 or higher
-- A Twenty CRM instance (self-hosted or cloud)
-- Twenty CRM API key
+### Prerequisites
 
-### 2. Get Your API Key
+- **Node.js** 18 or higher
+- **Twenty CRM** instance (self-hosted or cloud)
+- **Claude Desktop** or compatible MCP client
 
-#### For Self-Hosted Twenty:
-1. Log in to your Twenty CRM instance
-2. Navigate to Settings → API & Webhooks (under Developers)
-3. Generate a new API key
+### Setup Steps
 
-#### For Twenty Cloud:
-Same steps on https://app.twenty.com
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/KonstiDoll/twenty-crm-mcp-server.git
+   cd twenty-crm-mcp-server
+   ```
 
-### 3. Configure Claude Desktop
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-Edit your `claude_desktop_config.json`:
+3. **Get your Twenty CRM API key:**
+   - Log in to your Twenty CRM instance
+   - Navigate to **Settings → API & Webhooks** (under Developers)
+   - Click **Generate API Key**
+   - Copy the key
 
-```json
-{
-  "mcpServers": {
-    "twenty-crm": {
-      "command": "node",
-      "args": ["/path/to/twenty-crm-mcp-server/twenty-mcp-clean.js"],
-      "env": {
-        "TWENTY_API_KEY": "your_api_key_here",
-        "TWENTY_BASE_URL": "https://your-twenty-instance.com"
-      }
-    }
-  }
-}
+4. **Configure Claude Desktop:**
+
+   Edit your `claude_desktop_config.json`:
+
+   **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+   **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+   ```json
+   {
+     "mcpServers": {
+       "twenty-crm": {
+         "command": "node",
+         "args": ["/absolute/path/to/twenty-crm-mcp-server/twenty-mcp-clean.js"],
+         "env": {
+           "TWENTY_API_KEY": "your_api_key_here",
+           "TWENTY_BASE_URL": "https://api.twenty.com"
+         }
+       }
+     }
+   }
+   ```
+
+   **For self-hosted Twenty:**
+   ```json
+   "TWENTY_BASE_URL": "https://your-twenty-instance.com"
+   ```
+
+5. **Restart Claude Desktop**
+
+## 💬 Usage
+
+Once configured, interact with your CRM using natural language:
+
+### Creating Records
+
+**People:**
+```
+"Create a person named Max Mustermann with email max@example.com,
+phone +49-123-456789, works at Acme Corp as Software Engineer in Berlin,
+LinkedIn: linkedin.com/in/maxmustermann"
 ```
 
-**Important URLs:**
-- Self-hosted: Use your domain (e.g., `https://twenty.scenerii.com`)
-- Cloud: Use `https://api.twenty.com`
-
-### 4. Restart Claude Desktop
-
-## 💬 Usage Examples
-
-### Create a Person
+**Companies:**
 ```
-"Create a new person named John Doe with email john@example.com and phone +1 555-0100"
+"Create a company called TechStartup GmbH with:
+- Website: techstartup.io
+- Address: Hauptstraße 123, 10115 Berlin, Germany
+- 25 employees
+- ARR: €500,000
+- Mark as ideal customer profile
+- LinkedIn: linkedin.com/company/techstartup"
 ```
 
-The server will automatically structure it as:
-```json
-{
-  "name": {
-    "firstName": "John",
-    "lastName": "Doe"
-  },
-  "emails": {
-    "primaryEmail": "john@example.com"
-  },
-  "phones": {
-    "primaryPhoneNumber": "5550100",
-    "primaryPhoneCallingCode": "+1",
-    "primaryPhoneCountryCode": "US"
-  }
-}
-```
+### Querying Data
 
-### List People
 ```
-"Show me all people in my CRM"
-"Find all people working at Acme Corp"
+"Show me all people in the CRM"
+"List companies with more than 100 employees"
+"Find all contacts at Acme Corp"
 "Search for people with 'smith' in their name"
 ```
 
-### Create a Company
+### Updating Records
+
 ```
-"Create a company called Acme Corp with website acme.com and 50 employees"
+"Update Sarah's job title to VP of Engineering"
+"Change Acme Corp's employee count to 75"
+"Update TechStartup's address city to Munich"
 ```
 
-### Advanced Examples
-```
-"Create a person named Sarah Johnson, email sarah@techco.com, works at TechCo as Senior Developer, LinkedIn: linkedin.com/in/sarahj"
-
-"Create a company TechStartup with domain techstartup.io, 25 employees, ARR of $2M, and mark it as ideal customer profile"
-```
-
-## 🛠️ Available Tools
+## 🛠️ API Reference
 
 ### Person Operations
-- **create_person** - Create a new person with all details
-- **get_person** - Get person by ID
-- **list_people** - List/search people with filters
-- **update_person** - Update person information
+
+| Tool | Description | Required Fields |
+|------|-------------|----------------|
+| `create_person` | Create a new contact | `firstName`, `lastName` |
+| `get_person` | Get person by ID | `id` |
+| `list_people` | List/search people | - |
+| `update_person` | Update person info | `id` |
+
+**Optional Person Fields:**
+- `email` - Primary email address
+- `phone`, `phoneCountryCode`, `phoneCallingCode` - Phone details
+- `jobTitle` - Job title
+- `city` - City
+- `companyId` - Link to company
+- `linkedinUrl`, `xUrl` - Social profiles
 
 ### Company Operations
-- **create_company** - Create a new company with all details
-- **get_company** - Get company by ID
-- **list_companies** - List/search companies
-- **update_company** - Update company information
 
-## 📋 Field Mapping Reference
+| Tool | Description | Required Fields |
+|------|-------------|----------------|
+| `create_company` | Create a new company | `name` |
+| `get_company` | Get company by ID | `id` |
+| `list_companies` | List/search companies | - |
+| `update_company` | Update company info | `id` |
 
-### Person Fields
-| Input Parameter | GraphQL Structure | Example |
-|----------------|-------------------|---------|
-| `firstName`, `lastName` | `name: { firstName, lastName }` | "John", "Doe" |
-| `email` | `emails: { primaryEmail }` | "john@example.com" |
-| `phone` | `phones: { primaryPhoneNumber }` | "5551234567" |
-| `phoneCountryCode` | `phones: { primaryPhoneCountryCode }` | "US" |
-| `phoneCallingCode` | `phones: { primaryPhoneCallingCode }` | "+1" |
-| `linkedinUrl` | `linkedinLink: { primaryLinkUrl }` | "https://linkedin.com/in/user" |
-| `xUrl` | `xLink: { primaryLinkUrl }` | "https://x.com/user" |
-| `jobTitle` | `jobTitle` | "Software Engineer" |
-| `city` | `city` | "San Francisco" |
-| `companyId` | `companyId` | UUID |
+**Optional Company Fields:**
+- `domainUrl` - Company website
+- `addressStreet1`, `addressStreet2`, `addressCity`, `addressPostcode`, `addressState`, `addressCountry` - Full address
+- `employees` - Number of employees
+- `annualRecurringRevenue`, `currency` - ARR (auto-converted to micros)
+- `linkedinUrl`, `xUrl` - Social profiles
+- `idealCustomerProfile` - Boolean flag
 
-### Company Fields
-| Input Parameter | GraphQL Structure | Example |
-|----------------|-------------------|---------|
-| `name` | `name` | "Acme Corp" |
-| `domainUrl` | `domainName: { primaryLinkUrl }` | "https://acme.com" |
-| `linkedinUrl` | `linkedinLink: { primaryLinkUrl }` | "https://linkedin.com/company/acme" |
-| `xUrl` | `xLink: { primaryLinkUrl }` | "https://x.com/acmecorp" |
-| `annualRecurringRevenue` | `annualRecurringRevenue: { amountMicros, currencyCode }` | 5000000 → stored as micros |
-| `currency` | Part of ARR object | "USD", "EUR" |
-| `employees` | `employees` | 50 |
-| `address` | `address` | "123 Main St" |
-| `idealCustomerProfile` | `idealCustomerProfile` | true/false |
+## 📋 Understanding Composite Fields
 
-## 🔍 Technical Details
+Twenty CRM uses **composite fields** for related data. This server handles them automatically:
 
-### Why GraphQL?
-Twenty CRM uses **composite fields** (nested objects) extensively. GraphQL makes it much easier to work with these compared to REST:
-
-**REST Challenges:**
-- Complex nested objects in request body
-- Harder to validate
-- More prone to schema mismatches
-
-**GraphQL Benefits:**
-- Clear type system
-- Better error messages
-- Easier to handle nested structures
-- Auto-completion in API playground
-
-### Composite Fields Explained
-
-Twenty CRM uses composite fields for related data:
-
-**Name Composite:**
+### Name Composite
 ```javascript
 name: {
   firstName: "John",
@@ -194,7 +191,7 @@ name: {
 }
 ```
 
-**Emails Composite:**
+### Emails Composite
 ```javascript
 emails: {
   primaryEmail: "john@example.com",
@@ -202,7 +199,7 @@ emails: {
 }
 ```
 
-**Phones Composite:**
+### Phones Composite
 ```javascript
 phones: {
   primaryPhoneNumber: "5551234567",
@@ -212,91 +209,208 @@ phones: {
 }
 ```
 
-**Link Composite (LinkedIn, X, Domain):**
+### Address Composite
 ```javascript
-linkedinLink: {
-  primaryLinkLabel: "",
-  primaryLinkUrl: "https://linkedin.com/in/user",
-  additionalLinks: []
+address: {
+  addressStreet1: "123 Main St",
+  addressStreet2: "Suite 100",
+  addressCity: "San Francisco",
+  addressPostcode: "94102",
+  addressState: "CA",
+  addressCountry: "United States"
 }
 ```
 
-**Currency Composite (ARR):**
+### Link Composite (LinkedIn, X, Domain)
+```javascript
+linkedinLink: {
+  primaryLinkUrl: "https://linkedin.com/in/user",
+  secondaryLinks: []
+}
+```
+
+### Currency Composite (ARR)
 ```javascript
 annualRecurringRevenue: {
-  amountMicros: 5000000000000,  // $5M in micros
+  amountMicros: 5000000000000,  // $5M stored as micros
   currencyCode: "USD"
 }
 ```
 
+**Note:** You provide simple values (e.g., `email: "john@example.com"`), and the server automatically structures them correctly for Twenty's API.
+
+## 🏗️ Architecture
+
+### Why GraphQL?
+
+This server uses **GraphQL** instead of REST because:
+
+1. **Better for nested objects** - Twenty uses many composite fields
+2. **Type safety** - GraphQL schema validation catches errors early
+3. **Flexible queries** - Request exactly the fields you need
+4. **Clear error messages** - Easier debugging
+5. **Future-proof** - Easy to extend with new fields
+
+### Technical Stack
+
+- **MCP SDK** - [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk)
+- **GraphQL** - Direct integration with Twenty's GraphQL API
+- **Node.js** - ES Modules, async/await
+- **Twenty CRM** - Open-source CRM platform
+
 ## 🐛 Troubleshooting
 
-### GraphQL Endpoint Not Found
-**Error:** `GraphQL request failed (404)`
+### Connection Issues
 
-**Solution:** Check your `TWENTY_BASE_URL`:
-- Self-hosted: Should be your full domain (e.g., `https://twenty.scenerii.com`)
-- Cloud: Should be `https://api.twenty.com`
+**Error: GraphQL request failed (404)**
+
+- Check `TWENTY_BASE_URL` is correct
+- Self-hosted: Use your full domain (e.g., `https://twenty.company.com`)
+- Cloud: Use `https://api.twenty.com`
 - GraphQL endpoint is automatically set to `${TWENTY_BASE_URL}/graphql`
 
-### Authentication Error
-**Error:** `GraphQL request failed (401)` or `(403)`
+**Error: GraphQL request failed (401) or (403)**
 
-**Solutions:**
-1. Verify your API key is correct
-2. Check that the API key has proper permissions
-3. Generate a new API key in Settings → API & Webhooks
+- Verify API key is correct
+- Check API key has proper permissions in Twenty
+- Generate a new API key in Settings → API & Webhooks
 
 ### Field Validation Errors
-**Error:** `GraphQL errors: Field 'xyz' expected type 'ABC'`
 
-**Solution:** The server handles most field transformations automatically. If you see this:
-1. Check the Field Mapping Reference above
-2. Ensure you're providing the correct data types
+**Error: `Field 'xyz' expected type 'ABC'`**
+
+The server handles field transformations automatically. If you see validation errors:
+
+1. Check the field name matches the API Reference
+2. Ensure correct data types (string, number, boolean)
 3. Review the GraphQL error message for specifics
+4. Check the Examples section for correct usage
 
-### Person/Company Not Creating
-**Symptoms:** No error but record doesn't appear
+### Records Not Appearing
+
+**Symptoms:** No error but record doesn't appear in Twenty UI
 
 **Debug Steps:**
+
 1. Check the response - does it include an `id`?
-2. Try getting the record by ID: `get_person` or `get_company`
-3. Check Twenty CRM UI to see if it appears there
-4. Look at the full error message in Claude Desktop logs
+2. Try fetching by ID: `"Get person with ID xyz"`
+3. Refresh the Twenty CRM UI
+4. Check Claude Desktop logs for hidden errors
 
-## 🔄 Migration from Old Server
+## 🔄 Common Workflows
 
-If you were using the old `index.js`:
+### Onboarding New Clients
 
-1. **Update your config** to point to `twenty-mcp-clean.js`
-2. **Keep the same env vars** (`TWENTY_API_KEY`, `TWENTY_BASE_URL`)
-3. **No data migration needed** - this just changes how you interact with the API
-4. **Test basic operations** before fully switching over
+```
+1. "Create a company called NewCo with domain newco.com"
+2. "Create a person named John Smith, email john@newco.com, works at NewCo as CTO"
+3. "Update NewCo's details: 10 employees, ARR $250k, mark as ideal customer profile"
+```
+
+### Lead Management
+
+```
+1. "List all ideal customer profile companies"
+2. "Find all contacts at [company name]"
+3. "Update [person] with note about last call"
+```
+
+### Data Enrichment
+
+```
+1. "List people without LinkedIn profiles"
+2. "Update [person] LinkedIn: linkedin.com/in/username"
+3. "List companies missing employee count"
+```
 
 ## 🤝 Contributing
 
-Found a bug? Have a suggestion?
+We welcome contributions! Here's how to help:
 
-1. Test the GraphQL query directly in Twenty's API Playground (Settings → Playground)
-2. Document the issue with:
-   - Expected behavior
-   - Actual behavior
-   - GraphQL query/mutation that failed
-   - Error message
-3. Open an issue or submit a PR
+### Reporting Issues
+
+1. Check existing issues first
+2. Provide clear reproduction steps
+3. Include error messages
+4. Share your Twenty version
+
+### Submitting PRs
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Test against a real Twenty instance
+5. Commit with clear messages
+6. Push and create a Pull Request
+
+### Development Setup
+
+```bash
+# Clone your fork
+git clone https://github.com/your-username/twenty-crm-mcp-server.git
+cd twenty-crm-mcp-server
+
+# Install dependencies
+npm install
+
+# Set up environment
+cp .env.example .env
+# Edit .env with your API key
+
+# Test changes
+node twenty-mcp-clean.js
+```
 
 ## 📄 License
 
-MIT License - see LICENSE file for details
+MIT License - see [LICENSE](LICENSE) file for details.
 
-## 🙏 Credits
+## 🙏 Acknowledgments
 
-- [Twenty CRM](https://twenty.com) - The excellent open-source CRM
-- [Anthropic](https://anthropic.com) - Model Context Protocol
-- Built based on actual Twenty CRM API schema analysis
+- [Twenty CRM](https://twenty.com) - Outstanding open-source CRM platform
+- [Anthropic](https://anthropic.com) - Model Context Protocol specification
+- [MCP Community](https://github.com/modelcontextprotocol) - Inspiration and support
+
+## 🔗 Links
+
+- [Twenty CRM](https://twenty.com)
+- [Twenty Documentation](https://twenty.com/developers)
+- [Model Context Protocol](https://modelcontextprotocol.io/)
+- [Claude Desktop](https://claude.ai/desktop)
+- [GitHub Issues](https://github.com/KonstiDoll/twenty-crm-mcp-server/issues)
 
 ---
 
-**Version:** 2.0.0
-**Last Updated:** 2025-01-11
-**Status:** ✅ Production Ready (tested against real Twenty instance)
+## 🚀 Next Steps
+
+Ready to extend this server? Here are some ideas:
+
+### Planned Features
+
+- [ ] **Task Management** - Create and manage tasks
+- [ ] **Note Operations** - Add notes to people/companies
+- [ ] **Opportunity Tracking** - Sales pipeline management
+- [ ] **Custom Fields** - Support for workspace-specific fields
+- [ ] **Batch Operations** - Bulk create/update records
+- [ ] **Webhooks** - Real-time notifications
+- [ ] **Advanced Filters** - Complex query building
+- [ ] **Export/Import** - CSV/JSON data operations
+- [ ] **Analytics** - Query insights and metrics
+- [ ] **Attachments** - File management
+
+### Want to Contribute?
+
+Pick a feature from the list above or suggest your own!
+Open an issue to discuss, then submit a PR.
+
+---
+
+<div align="center">
+
+**Made with ❤️ for the open-source community**
+
+⭐ **Star this repo if you find it useful!**
+
+[Report Bug](https://github.com/KonstiDoll/twenty-crm-mcp-server/issues) · [Request Feature](https://github.com/KonstiDoll/twenty-crm-mcp-server/issues) · [Discussions](https://github.com/KonstiDoll/twenty-crm-mcp-server/discussions)
+
+</div>
