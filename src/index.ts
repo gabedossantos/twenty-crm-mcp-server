@@ -626,8 +626,8 @@ class TwentyCRMServer {
 
   async getPerson(id: string): Promise<CallToolResult> {
     const query = `
-      query GetPerson($id: ID!) {
-        person(id: $id) {
+      query GetPerson($id: UUID!) {
+        person(filter: { id: { eq: $id } }) {
           id
           name {
             firstName
@@ -746,7 +746,7 @@ class TwentyCRMServer {
     const { id, ...updates } = data;
 
     const mutation = `
-      mutation UpdatePerson($id: ID!, $input: PersonUpdateInput!) {
+      mutation UpdatePerson($id: UUID!, $input: PersonUpdateInput!) {
         updatePerson(id: $id, data: $input) {
           id
           name {
@@ -930,8 +930,8 @@ class TwentyCRMServer {
 
   async getCompany(id: string): Promise<CallToolResult> {
     const query = `
-      query GetCompany($id: ID!) {
-        company(id: $id) {
+      query GetCompany($id: UUID!) {
+        company(filter: { id: { eq: $id } }) {
           id
           name
           domainName {
@@ -1036,7 +1036,7 @@ class TwentyCRMServer {
     const { id, ...updates } = data;
 
     const mutation = `
-      mutation UpdateCompany($id: ID!, $input: CompanyUpdateInput!) {
+      mutation UpdateCompany($id: UUID!, $input: CompanyUpdateInput!) {
         updateCompany(id: $id, data: $input) {
           id
           name
