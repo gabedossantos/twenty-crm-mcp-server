@@ -20,14 +20,16 @@
 ## ✨ Features
 
 - 🚀 **GraphQL-Native** - Built on Twenty's GraphQL API for robust, type-safe operations
-- 🔄 **Full CRUD Support** - Create, read, update, and list people, companies, and opportunities
+- 🔄 **Full CRUD Support** - Create, read, update, and list people, companies, opportunities, tasks, and notes
 - 🏗️ **Composite Fields** - Proper handling of nested objects (name, emails, phones, addresses, links)
 - 💰 **Currency Support** - Automatic conversion for deal amounts and Annual Recurring Revenue
 - 🔍 **Smart Search** - Filter and search across all CRM objects
 - 📊 **Sales Pipeline** - Track opportunities with stages, amounts, and close dates
+- ✅ **Task Management** - Create, assign, and track tasks with statuses and due dates
+- 📝 **Note Operations** - Add and manage notes with rich text support
 - ⚡ **Real-time Updates** - Changes sync immediately with your Twenty instance
 - 🛡️ **Type-Safe** - Full TypeScript implementation with comprehensive type definitions
-- 🧪 **Tested** - Comprehensive unit tests with 36+ test cases
+- 🧪 **Tested** - Comprehensive unit tests with 50+ test cases
 - 📖 **Well-Documented** - Comprehensive guides and examples
 
 ## 🎯 What You Can Do
@@ -54,6 +56,22 @@
 "Show me all opportunities in the MEETING stage"
 "Update the Enterprise Deal to PROPOSAL stage with amount €75,000"
 "List all opportunities for TechCo"
+```
+
+**Manage Tasks:**
+```
+"Create a task to follow up with Sarah next week with status TODO"
+"Show me all IN_PROGRESS tasks"
+"Update task to DONE status"
+"List all tasks assigned to user-123"
+```
+
+**Manage Notes:**
+```
+"Create a note titled 'Meeting Summary' with the key discussion points"
+"Show me the note with ID note-456"
+"Update the meeting notes with additional information"
+"List all notes about the Enterprise Deal"
 ```
 
 ## 🚀 Installation
@@ -268,6 +286,43 @@ LinkedIn: linkedin.com/in/maxmustermann"
 - `companyId` - Filter by company
 - `stage` - Filter by stage
 
+### Task Operations
+
+| Tool | Description | Required Fields |
+|------|-------------|----------------|
+| `create_task` | Create a new task | `title` |
+| `get_task` | Get task by ID | `id` |
+| `list_tasks` | List/search tasks | - |
+| `update_task` | Update task info | `id` |
+
+**Optional Task Fields:**
+- `body` - Task description/body in markdown format
+- `status` - Task status: 'TODO', 'IN_PROGRESS', 'DONE' (default: 'TODO')
+- `dueAt` - Due date (ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ)
+- `assigneeId` - ID of the workspace member to assign the task to
+
+**List Tasks Filters:**
+- `limit` - Number of results (max: 60, default: 20)
+- `searchTerm` - Search by task title
+- `status` - Filter by status ('TODO', 'IN_PROGRESS', 'DONE')
+- `assigneeId` - Filter by assignee
+
+### Note Operations
+
+| Tool | Description | Required Fields |
+|------|-------------|----------------|
+| `create_note` | Create a new note | `title` |
+| `get_note` | Get note by ID | `id` |
+| `list_notes` | List/search notes | - |
+| `update_note` | Update note info | `id` |
+
+**Optional Note Fields:**
+- `body` - Note body/content in markdown format
+
+**List Notes Filters:**
+- `limit` - Number of results (max: 60, default: 20)
+- `searchTerm` - Search by note title
+
 ## 📋 Understanding Composite Fields
 
 Twenty CRM uses **composite fields** for related data. This server handles them automatically:
@@ -401,9 +456,12 @@ npm run test:coverage
 - ✅ GraphQL request handling
 - ✅ All Person operations (create, get, list, update)
 - ✅ All Company operations (create, get, list, update)
+- ✅ All Opportunity operations (create, get, list, update)
+- ✅ All Task operations (create, get, list, update)
+- ✅ All Note operations (create, get, list, update)
 - ✅ Error handling and validation
-- ✅ Composite field transformations
-- ✅ Currency conversion (ARR to micros)
+- ✅ Composite field transformations (name, emails, phones, address, bodyV2)
+- ✅ Currency conversion (ARR and opportunity amounts to micros)
 
 ### Configuration Files
 
@@ -555,11 +613,11 @@ Ready to extend this server? Here are some ideas:
 ### Completed Features
 
 - [x] **Opportunity Tracking** - Sales pipeline management ✅ v0.2.0
+- [x] **Task Management** - Create, assign, and track tasks ✅ v0.4.0
+- [x] **Note Operations** - Add and manage notes ✅ v0.4.0
 
 ### Planned Features
 
-- [ ] **Task Management** - Create and manage tasks
-- [ ] **Note Operations** - Add notes to people/companies
 - [ ] **Custom Fields** - Support for workspace-specific fields
 - [ ] **Batch Operations** - Bulk create/update records
 - [ ] **Webhooks** - Real-time notifications

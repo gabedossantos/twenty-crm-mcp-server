@@ -1229,6 +1229,464 @@ describe('TwentyCRMServer', () => {
     });
   });
 
+  describe('Task Operations', () => {
+    describe('createTask', () => {
+      it('should create a task with required fields only', async () => {
+        const mockResponse = {
+          data: {
+            createTask: {
+              id: 'task-123',
+              title: 'Follow up with client',
+              bodyV2: null,
+              status: 'TODO',
+              dueAt: null,
+              position: 0,
+              assigneeId: null,
+              assignee: null,
+              createdAt: '2024-01-01T00:00:00Z'
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.createTask({
+          title: 'Follow up with client'
+        });
+
+        expect(result.content[0].text).toContain('✅ Created task: Follow up with client');
+      });
+
+      it('should create a task with all fields', async () => {
+        const mockResponse = {
+          data: {
+            createTask: {
+              id: 'task-123',
+              title: 'Review proposal',
+              bodyV2: {
+                blocknote: 'Review and approve the Q4 proposal',
+                markdown: 'Review and approve the Q4 proposal'
+              },
+              status: 'IN_PROGRESS',
+              dueAt: '2024-12-31T23:59:59Z',
+              position: 0,
+              assigneeId: 'user-456',
+              assignee: {
+                id: 'user-456',
+                name: {
+                  firstName: 'John',
+                  lastName: 'Doe'
+                }
+              },
+              createdAt: '2024-01-01T00:00:00Z'
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.createTask({
+          title: 'Review proposal',
+          body: 'Review and approve the Q4 proposal',
+          status: 'IN_PROGRESS',
+          dueAt: '2024-12-31T23:59:59Z',
+          assigneeId: 'user-456'
+        });
+
+        expect(result.content[0].text).toContain('✅ Created task: Review proposal');
+      });
+    });
+
+    describe('getTask', () => {
+      it('should retrieve a task by ID', async () => {
+        const mockResponse = {
+          data: {
+            task: {
+              id: 'task-123',
+              title: 'Complete documentation',
+              bodyV2: {
+                blocknote: 'Write comprehensive API docs',
+                markdown: 'Write comprehensive API docs'
+              },
+              status: 'IN_PROGRESS',
+              dueAt: '2024-12-31T23:59:59Z',
+              position: 1,
+              assigneeId: 'user-456',
+              assignee: {
+                id: 'user-456',
+                name: {
+                  firstName: 'Jane',
+                  lastName: 'Smith'
+                }
+              },
+              createdAt: '2024-01-01T00:00:00Z',
+              updatedAt: '2024-01-02T00:00:00Z',
+              deletedAt: null
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.getTask('task-123');
+
+        expect(result.content[0].text).toContain('Task details:');
+        expect(result.content[0].text).toContain('Complete documentation');
+      });
+    });
+
+    describe('listTasks', () => {
+      it('should list tasks without filters', async () => {
+        const mockResponse = {
+          data: {
+            tasks: {
+              edges: [
+                {
+                  node: {
+                    id: 'task-123',
+                    title: 'Task 1',
+                    bodyV2: null,
+                    status: 'TODO',
+                    dueAt: null,
+                    position: 0,
+                    assigneeId: null,
+                    assignee: null,
+                    createdAt: '2024-01-01T00:00:00Z',
+                    updatedAt: null
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false
+              }
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.listTasks({});
+
+        expect(result.content[0].text).toContain('Found 1 tasks');
+      });
+
+      it('should list tasks with status filter', async () => {
+        const mockResponse = {
+          data: {
+            tasks: {
+              edges: [
+                {
+                  node: {
+                    id: 'task-123',
+                    title: 'Active Task',
+                    bodyV2: null,
+                    status: 'IN_PROGRESS',
+                    dueAt: null,
+                    position: 0,
+                    assigneeId: null,
+                    assignee: null,
+                    createdAt: '2024-01-01T00:00:00Z',
+                    updatedAt: null
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false
+              }
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.listTasks({ status: 'IN_PROGRESS' });
+
+        expect(result.content[0].text).toContain('Found 1 tasks');
+      });
+    });
+
+    describe('updateTask', () => {
+      it('should update task status', async () => {
+        const mockResponse = {
+          data: {
+            updateTask: {
+              id: 'task-123',
+              title: 'Task',
+              bodyV2: null,
+              status: 'DONE',
+              dueAt: null,
+              position: 0,
+              assigneeId: null,
+              updatedAt: '2024-02-01T00:00:00Z'
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.updateTask({
+          id: 'task-123',
+          status: 'DONE'
+        });
+
+        expect(result.content[0].text).toContain('Updated task');
+        expect(result.content[0].text).toContain('DONE');
+      });
+    });
+  });
+
+  describe('Note Operations', () => {
+    describe('createNote', () => {
+      it('should create a note with required fields only', async () => {
+        const mockResponse = {
+          data: {
+            createNote: {
+              id: 'note-123',
+              title: 'Meeting notes',
+              bodyV2: null,
+              position: 0,
+              createdBy: {
+                source: 'API'
+              },
+              createdAt: '2024-01-01T00:00:00Z'
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.createNote({
+          title: 'Meeting notes'
+        });
+
+        expect(result.content[0].text).toContain('✅ Created note: Meeting notes');
+      });
+
+      it('should create a note with body', async () => {
+        const mockResponse = {
+          data: {
+            createNote: {
+              id: 'note-123',
+              title: 'Project summary',
+              bodyV2: {
+                blocknote: '# Project Summary\n\nKey points from discussion',
+                markdown: '# Project Summary\n\nKey points from discussion'
+              },
+              position: 0,
+              createdBy: {
+                source: 'API'
+              },
+              createdAt: '2024-01-01T00:00:00Z'
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.createNote({
+          title: 'Project summary',
+          body: '# Project Summary\n\nKey points from discussion'
+        });
+
+        expect(result.content[0].text).toContain('✅ Created note: Project summary');
+      });
+    });
+
+    describe('getNote', () => {
+      it('should retrieve a note by ID', async () => {
+        const mockResponse = {
+          data: {
+            note: {
+              id: 'note-123',
+              title: 'Client feedback',
+              bodyV2: {
+                blocknote: 'Client requested additional features',
+                markdown: 'Client requested additional features'
+              },
+              position: 1,
+              createdBy: {
+                source: 'API'
+              },
+              createdAt: '2024-01-01T00:00:00Z',
+              updatedAt: '2024-01-02T00:00:00Z',
+              deletedAt: null
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.getNote('note-123');
+
+        expect(result.content[0].text).toContain('Note details:');
+        expect(result.content[0].text).toContain('Client feedback');
+      });
+    });
+
+    describe('listNotes', () => {
+      it('should list notes without filters', async () => {
+        const mockResponse = {
+          data: {
+            notes: {
+              edges: [
+                {
+                  node: {
+                    id: 'note-123',
+                    title: 'Note 1',
+                    bodyV2: null,
+                    position: 0,
+                    createdBy: {
+                      source: 'API'
+                    },
+                    createdAt: '2024-01-01T00:00:00Z',
+                    updatedAt: null
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false
+              }
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.listNotes({});
+
+        expect(result.content[0].text).toContain('Found 1 notes');
+      });
+
+      it('should list notes with search term', async () => {
+        const mockResponse = {
+          data: {
+            notes: {
+              edges: [
+                {
+                  node: {
+                    id: 'note-123',
+                    title: 'Important note',
+                    bodyV2: null,
+                    position: 0,
+                    createdBy: {
+                      source: 'API'
+                    },
+                    createdAt: '2024-01-01T00:00:00Z',
+                    updatedAt: null
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false
+              }
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.listNotes({ searchTerm: 'Important' });
+
+        expect(result.content[0].text).toContain('Found 1 notes');
+      });
+    });
+
+    describe('updateNote', () => {
+      it('should update note title', async () => {
+        const mockResponse = {
+          data: {
+            updateNote: {
+              id: 'note-123',
+              title: 'Updated note title',
+              bodyV2: null,
+              position: 0,
+              updatedAt: '2024-02-01T00:00:00Z'
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.updateNote({
+          id: 'note-123',
+          title: 'Updated note title'
+        });
+
+        expect(result.content[0].text).toContain('Updated note');
+        expect(result.content[0].text).toContain('Updated note title');
+      });
+
+      it('should update note body', async () => {
+        const mockResponse = {
+          data: {
+            updateNote: {
+              id: 'note-123',
+              title: 'Note',
+              bodyV2: {
+                blocknote: 'New content',
+                markdown: 'New content'
+              },
+              position: 0,
+              updatedAt: '2024-02-01T00:00:00Z'
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.updateNote({
+          id: 'note-123',
+          body: 'New content'
+        });
+
+        expect(result.content[0].text).toContain('Updated note');
+      });
+    });
+  });
+
   describe('Error Handling', () => {
     it('should handle tool errors gracefully', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));

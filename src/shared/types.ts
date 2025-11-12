@@ -43,6 +43,11 @@ export interface CurrencyComposite {
   currencyCode: string;
 }
 
+export interface BodyV2Composite {
+  blocknote: string;
+  markdown: string;
+}
+
 // ======================
 // GRAPHQL RESPONSE TYPES
 // ======================

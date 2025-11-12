@@ -8,6 +8,7 @@ import {
   LinkComposite,
   AddressComposite,
   CurrencyComposite,
+  BodyV2Composite,
 } from "./types.js";
 
 /**
@@ -101,5 +102,18 @@ export function currencyFromMicros(
   return {
     amount: currency.amountMicros / 1000000,
     currencyCode: currency.currencyCode,
+  };
+}
+
+/**
+ * Transform markdown text to BodyV2Composite
+ * Creates both blocknote and markdown representations
+ */
+export function transformBodyV2(text: string): BodyV2Composite {
+  // For simplicity, use the same text for both formats
+  // In a production environment, you might want to convert markdown to BlockNote format
+  return {
+    blocknote: text,
+    markdown: text,
   };
 }

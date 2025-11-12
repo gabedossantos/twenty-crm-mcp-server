@@ -48,6 +48,28 @@ import {
   ListOpportunitiesParams,
 } from "./domains/opportunity/index.js";
 
+import {
+  TASK_TOOLS,
+  createTask,
+  getTask,
+  listTasks,
+  updateTask,
+  CreateTaskInput,
+  UpdateTaskInput,
+  ListTasksParams,
+} from "./domains/task/index.js";
+
+import {
+  NOTE_TOOLS,
+  createNote,
+  getNote,
+  listNotes,
+  updateNote,
+  CreateNoteInput,
+  UpdateNoteInput,
+  ListNotesParams,
+} from "./domains/note/index.js";
+
 /**
  * Main Twenty CRM MCP Server
  */
@@ -60,7 +82,7 @@ class TwentyCRMServer {
     this.server = new Server(
       {
         name: "twenty-crm",
-        version: "0.3.0",
+        version: "0.4.0",
       },
       {
         capabilities: {
@@ -83,7 +105,13 @@ class TwentyCRMServer {
     // Register list tools handler
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
-        tools: [...PERSON_TOOLS, ...COMPANY_TOOLS, ...OPPORTUNITY_TOOLS],
+        tools: [
+          ...PERSON_TOOLS,
+          ...COMPANY_TOOLS,
+          ...OPPORTUNITY_TOOLS,
+          ...TASK_TOOLS,
+          ...NOTE_TOOLS,
+        ],
       };
     });
 
@@ -158,6 +186,50 @@ class TwentyCRMServer {
             return await updateOpportunity(
               this.client,
               args as unknown as UpdateOpportunityInput
+            );
+
+          // Task operations
+          case "create_task":
+            return await createTask(
+              this.client,
+              args as unknown as CreateTaskInput
+            );
+          case "get_task":
+            return await getTask(
+              this.client,
+              (args as unknown as { id: string }).id
+            );
+          case "list_tasks":
+            return await listTasks(
+              this.client,
+              (args || {}) as unknown as ListTasksParams
+            );
+          case "update_task":
+            return await updateTask(
+              this.client,
+              args as unknown as UpdateTaskInput
+            );
+
+          // Note operations
+          case "create_note":
+            return await createNote(
+              this.client,
+              args as unknown as CreateNoteInput
+            );
+          case "get_note":
+            return await getNote(
+              this.client,
+              (args as unknown as { id: string }).id
+            );
+          case "list_notes":
+            return await listNotes(
+              this.client,
+              (args || {}) as unknown as ListNotesParams
+            );
+          case "update_note":
+            return await updateNote(
+              this.client,
+              args as unknown as UpdateNoteInput
             );
 
           default:
@@ -243,6 +315,38 @@ class TwentyCRMServer {
 
   async updateOpportunity(data: UpdateOpportunityInput) {
     return updateOpportunity(this.client, data);
+  }
+
+  async createTask(data: CreateTaskInput) {
+    return createTask(this.client, data);
+  }
+
+  async getTask(id: string) {
+    return getTask(this.client, id);
+  }
+
+  async listTasks(params: ListTasksParams = {}) {
+    return listTasks(this.client, params);
+  }
+
+  async updateTask(data: UpdateTaskInput) {
+    return updateTask(this.client, data);
+  }
+
+  async createNote(data: CreateNoteInput) {
+    return createNote(this.client, data);
+  }
+
+  async getNote(id: string) {
+    return getNote(this.client, id);
+  }
+
+  async listNotes(params: ListNotesParams = {}) {
+    return listNotes(this.client, params);
+  }
+
+  async updateNote(data: UpdateNoteInput) {
+    return updateNote(this.client, data);
   }
 }
 
