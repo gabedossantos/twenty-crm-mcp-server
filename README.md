@@ -20,13 +20,14 @@
 ## ✨ Features
 
 - 🚀 **GraphQL-Native** - Built on Twenty's GraphQL API for robust, type-safe operations
-- 🔄 **Full CRUD Support** - Create, read, update, and list people and companies
+- 🔄 **Full CRUD Support** - Create, read, update, and list people, companies, and opportunities
 - 🏗️ **Composite Fields** - Proper handling of nested objects (name, emails, phones, addresses, links)
-- 💰 **Currency Support** - Automatic conversion for Annual Recurring Revenue
+- 💰 **Currency Support** - Automatic conversion for deal amounts and Annual Recurring Revenue
 - 🔍 **Smart Search** - Filter and search across all CRM objects
+- 📊 **Sales Pipeline** - Track opportunities with stages, amounts, and close dates
 - ⚡ **Real-time Updates** - Changes sync immediately with your Twenty instance
 - 🛡️ **Type-Safe** - Full TypeScript implementation with comprehensive type definitions
-- 🧪 **Tested** - 71%+ code coverage with comprehensive unit tests
+- 🧪 **Tested** - Comprehensive unit tests with 36+ test cases
 - 📖 **Well-Documented** - Comprehensive guides and examples
 
 ## 🎯 What You Can Do
@@ -45,6 +46,14 @@
 "Show me all companies in San Francisco"
 "Update TechStartup's address to 123 Main St, Berlin, Germany"
 "List all ideal customer profile companies"
+```
+
+**Manage Opportunities:**
+```
+"Create an opportunity called 'Enterprise Deal' for Acme Corp worth €50,000 closing on Dec 31st"
+"Show me all opportunities in the MEETING stage"
+"Update the Enterprise Deal to PROPOSAL stage with amount €75,000"
+"List all opportunities for TechCo"
 ```
 
 ## 🚀 Installation
@@ -171,6 +180,15 @@ LinkedIn: linkedin.com/in/maxmustermann"
 - LinkedIn: linkedin.com/company/techstartup"
 ```
 
+**Opportunities:**
+```
+"Create an opportunity named 'Q4 Enterprise Deal' for TechStartup:
+- Amount: €100,000
+- Stage: NEW
+- Close date: 2025-12-31
+- Point of contact: Max Mustermann"
+```
+
 ### Querying Data
 
 ```
@@ -178,6 +196,8 @@ LinkedIn: linkedin.com/in/maxmustermann"
 "List companies with more than 100 employees"
 "Find all contacts at Acme Corp"
 "Search for people with 'smith' in their name"
+"Show all opportunities in MEETING stage"
+"List opportunities for TechStartup"
 ```
 
 ### Updating Records
@@ -186,6 +206,8 @@ LinkedIn: linkedin.com/in/maxmustermann"
 "Update Sarah's job title to VP of Engineering"
 "Change Acme Corp's employee count to 75"
 "Update TechStartup's address city to Munich"
+"Move the Enterprise Deal to PROPOSAL stage"
+"Update Q4 Enterprise Deal amount to €150,000"
 ```
 
 ## 🛠️ API Reference
@@ -223,6 +245,28 @@ LinkedIn: linkedin.com/in/maxmustermann"
 - `annualRecurringRevenue`, `currency` - ARR (auto-converted to micros)
 - `linkedinUrl`, `xUrl` - Social profiles
 - `idealCustomerProfile` - Boolean flag
+
+### Opportunity Operations
+
+| Tool | Description | Required Fields |
+|------|-------------|----------------|
+| `create_opportunity` | Create a new opportunity | `name` |
+| `get_opportunity` | Get opportunity by ID | `id` |
+| `list_opportunities` | List/search opportunities | - |
+| `update_opportunity` | Update opportunity info | `id` |
+
+**Optional Opportunity Fields:**
+- `amount`, `currency` - Deal amount (auto-converted to micros)
+- `stage` - Opportunity stage (e.g., 'NEW', 'SCREENING', 'MEETING', 'PROPOSAL', 'CUSTOMER')
+- `closeDate` - Expected close date (ISO 8601 format: YYYY-MM-DD)
+- `companyId` - Link to company
+- `pointOfContactId` - Link to person (point of contact)
+
+**List Opportunities Filters:**
+- `limit` - Number of results (max: 60, default: 20)
+- `searchTerm` - Search by opportunity name
+- `companyId` - Filter by company
+- `stage` - Filter by stage
 
 ## 📋 Understanding Composite Fields
 
@@ -508,11 +552,14 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 Ready to extend this server? Here are some ideas:
 
+### Completed Features
+
+- [x] **Opportunity Tracking** - Sales pipeline management ✅ v0.2.0
+
 ### Planned Features
 
 - [ ] **Task Management** - Create and manage tasks
 - [ ] **Note Operations** - Add notes to people/companies
-- [ ] **Opportunity Tracking** - Sales pipeline management
 - [ ] **Custom Fields** - Support for workspace-specific fields
 - [ ] **Batch Operations** - Bulk create/update records
 - [ ] **Webhooks** - Real-time notifications
