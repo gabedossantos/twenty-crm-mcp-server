@@ -25,7 +25,8 @@
 - 💰 **Currency Support** - Automatic conversion for Annual Recurring Revenue
 - 🔍 **Smart Search** - Filter and search across all CRM objects
 - ⚡ **Real-time Updates** - Changes sync immediately with your Twenty instance
-- 🛡️ **Type-Safe** - Leverages GraphQL's type system for reliability
+- 🛡️ **Type-Safe** - Full TypeScript implementation with comprehensive type definitions
+- 🧪 **Tested** - 71%+ code coverage with comprehensive unit tests
 - 📖 **Well-Documented** - Comprehensive guides and examples
 
 ## 🎯 What You Can Do
@@ -85,7 +86,7 @@
      "mcpServers": {
        "twenty-crm": {
          "command": "node",
-         "args": ["/absolute/path/to/twenty-crm-mcp-server/twenty-mcp-clean.js"],
+         "args": ["/absolute/path/to/twenty-crm-mcp-server/dist/index.js"],
          "env": {
            "TWENTY_API_KEY": "your_api_key_here",
            "TWENTY_BASE_URL": "https://api.twenty.com"
@@ -94,6 +95,8 @@
      }
    }
    ```
+
+   **Note:** Make sure to run `npm run build` first to compile the TypeScript code to the `dist/` directory.
 
    **For self-hosted Twenty:**
    ```json
@@ -256,7 +259,79 @@ This server uses **GraphQL** instead of REST because:
 - **MCP SDK** - [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk)
 - **GraphQL** - Direct integration with Twenty's GraphQL API
 - **Node.js** - ES Modules, async/await
+- **TypeScript** - Full type safety and IDE support
+- **Vitest** - Fast unit testing with 71%+ code coverage
 - **Twenty CRM** - Open-source CRM platform
+
+## 🧪 Development & Testing
+
+### TypeScript Support
+
+The server is written in **TypeScript** with comprehensive type definitions for:
+
+- **All API operations** - Person and Company CRUD operations
+- **GraphQL requests** - Full typing for queries and mutations
+- **Composite fields** - Type-safe nested objects
+- **MCP protocol** - Integration with the SDK's type system
+
+**Benefits:**
+- 🔒 Type-safe development with autocompletion
+- 🐛 Catch errors at compile-time
+- 📖 Self-documenting code with IntelliSense
+- 🔄 Easy refactoring with confidence
+
+### Building from Source
+
+```bash
+# Build the TypeScript code
+npm run build
+
+# Start the compiled server
+npm start
+
+# Development mode with auto-reload
+npm run dev
+
+# Type-check without building
+npm run type-check
+```
+
+### Running Tests
+
+The project includes **comprehensive unit tests** with 71%+ code coverage:
+
+```bash
+# Run all tests
+npm test
+
+# Watch mode for development
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+```
+
+**Test Coverage:**
+- ✅ GraphQL request handling
+- ✅ All Person operations (create, get, list, update)
+- ✅ All Company operations (create, get, list, update)
+- ✅ Error handling and validation
+- ✅ Composite field transformations
+- ✅ Currency conversion (ARR to micros)
+
+### Configuration Files
+
+**TypeScript:**
+- `tsconfig.json` - TypeScript compiler configuration
+- `src/index.ts` - Main server implementation
+
+**Testing:**
+- `vitest.config.ts` - Test configuration
+- `src/index.test.ts` - Comprehensive test suite
+
+**Build Output:**
+- `dist/` - Compiled JavaScript and type definitions
+- `coverage/` - Test coverage reports
 
 ## 🐛 Troubleshooting
 
@@ -357,8 +432,14 @@ npm install
 cp .env.example .env
 # Edit .env with your API key
 
-# Test changes
-node twenty-mcp-clean.js
+# Build the TypeScript code
+npm run build
+
+# Run tests
+npm test
+
+# Test changes in development mode
+npm run dev
 ```
 
 ## 📄 License

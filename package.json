@@ -3,14 +3,19 @@
   "version": "2.0.0",
   "description": "A Model Context Protocol (MCP) server for Twenty CRM integration. Enables natural language interactions with your CRM data through Claude and other AI assistants.",
   "type": "module",
-  "main": "twenty-mcp-clean.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "start": "node twenty-mcp-clean.js",
-    "start:clean": "node twenty-mcp-clean.js",
-    "start:legacy": "node index.js",
-    "dev": "node --inspect twenty-mcp-clean.js",
-    "dev:legacy": "node --inspect index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "dev:watch": "tsx watch src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "type-check": "tsc --noEmit",
+    "prebuild": "rm -rf dist",
+    "prestart": "npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.6.0"
@@ -39,5 +44,12 @@
   "bugs": {
     "url": "https://github.com/mhenry3164/twenty-crm-mcp-server/issues"
   },
-  "homepage": "https://github.com/mhenry3164/twenty-crm-mcp-server#readme"
+  "homepage": "https://github.com/mhenry3164/twenty-crm-mcp-server#readme",
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@vitest/coverage-v8": "^4.0.8",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
+  }
 }
