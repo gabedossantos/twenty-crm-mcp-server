@@ -233,7 +233,7 @@ class TwentyCRMServer {
     this.server = new Server(
       {
         name: "twenty-crm",
-        version: "2.0.0",
+        version: "0.1.0",
       },
       {
         capabilities: {
@@ -1126,7 +1126,7 @@ class TwentyCRMServer {
   async run(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error("Twenty CRM MCP Server v2.0 running on stdio (GraphQL-based)");
+    console.error("Twenty CRM MCP Server v0.1.0 running on stdio (GraphQL-based)");
   }
 }
 

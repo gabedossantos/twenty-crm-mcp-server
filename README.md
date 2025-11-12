@@ -55,7 +55,46 @@
 - **Twenty CRM** instance (self-hosted or cloud)
 - **Claude Desktop** or compatible MCP client
 
-### Setup Steps
+### Option 1: Install via npm (Recommended)
+
+The easiest way to use this server is via npx:
+
+1. **Get your Twenty CRM API key:**
+   - Log in to your Twenty CRM instance
+   - Navigate to **Settings → API & Webhooks** (under Developers)
+   - Click **Generate API Key**
+   - Copy the key
+
+2. **Configure Claude Desktop:**
+
+   Edit your `claude_desktop_config.json`:
+
+   **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+   **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+   ```json
+   {
+     "mcpServers": {
+       "twenty-crm": {
+         "command": "npx",
+         "args": ["-y", "twenty-crm-mcp-server"],
+         "env": {
+           "TWENTY_API_KEY": "your_api_key_here",
+           "TWENTY_BASE_URL": "https://api.twenty.com"
+         }
+       }
+     }
+   }
+   ```
+
+   **For self-hosted Twenty:**
+   ```json
+   "TWENTY_BASE_URL": "https://your-twenty-instance.com"
+   ```
+
+3. **Restart Claude Desktop**
+
+### Option 2: Install from Source
 
 1. **Clone the repository:**
    ```bash
@@ -68,13 +107,18 @@
    npm install
    ```
 
-3. **Get your Twenty CRM API key:**
+3. **Build the project:**
+   ```bash
+   npm run build
+   ```
+
+4. **Get your Twenty CRM API key:**
    - Log in to your Twenty CRM instance
    - Navigate to **Settings → API & Webhooks** (under Developers)
    - Click **Generate API Key**
    - Copy the key
 
-4. **Configure Claude Desktop:**
+5. **Configure Claude Desktop:**
 
    Edit your `claude_desktop_config.json`:
 
@@ -96,14 +140,12 @@
    }
    ```
 
-   **Note:** Make sure to run `npm run build` first to compile the TypeScript code to the `dist/` directory.
-
    **For self-hosted Twenty:**
    ```json
    "TWENTY_BASE_URL": "https://your-twenty-instance.com"
    ```
 
-5. **Restart Claude Desktop**
+6. **Restart Claude Desktop**
 
 ## 💬 Usage
 
