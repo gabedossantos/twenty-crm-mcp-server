@@ -36,6 +36,9 @@ yarn-error.log*
 # CI/CD
 .github/
 
+# Development documentation
+dev/
+
 # Large response files (example data)
 *.json
 !package.json
