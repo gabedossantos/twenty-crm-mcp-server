@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "twenty-crm-mcp-server": "./dist/index.js"
+    "twenty-crm-mcp-server": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -43,7 +43,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/KonstiDoll/twenty-crm-mcp-server.git"
+    "url": "git+https://github.com/KonstiDoll/twenty-crm-mcp-server.git"
   },
   "bugs": {
     "url": "https://github.com/KonstiDoll/twenty-crm-mcp-server/issues"
