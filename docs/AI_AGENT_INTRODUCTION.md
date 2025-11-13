@@ -646,6 +646,320 @@ You: [List opportunities in MEETING/PROPOSAL stage with old creation dates]
 
 ---
 
+### TaskTarget Management
+
+#### `mcp__twenty-crm__create_task_target`
+**Purpose:** Link a task to a person, company, or opportunity
+
+**Required Parameters:**
+- `taskId` (string): Task ID to link
+
+**Optional Parameters (at least one required):**
+- `personId` (string): Person ID to link the task to
+- `companyId` (string): Company ID to link the task to
+- `opportunityId` (string): Opportunity ID to link the task to
+
+**When to Use:**
+- Associate follow-up tasks with specific contacts
+- Link action items to deals or companies
+- Create task relationships for better context
+- Track task dependencies across entities
+
+**Example Workflows:**
+```
+"Link this follow-up task to Sarah Johnson"
+"Associate the contract review task with Acme Corp"
+"Link the pricing proposal task to the Enterprise Deal opportunity"
+```
+
+**Common Pattern - Creating Task with Relationships:**
+```
+User: "Create a follow-up task for Acme Corp about pricing"
+
+Step 1: Create the task
+→ create_task({ title: "Follow up about pricing" })
+→ Returns: { id: "task-123", ... }
+
+Step 2: Link to company
+→ create_task_target({ taskId: "task-123", companyId: "acme-id" })
+
+Result: Task is now visible on Acme Corp's record
+```
+
+**Why Two Steps:**
+- Tasks can be linked to multiple entities (person + company + opportunity)
+- Allows flexible relationship management
+- Matches Twenty CRM's database structure
+
+---
+
+#### `mcp__twenty-crm__list_task_targets`
+**Purpose:** List task-record relationships
+
+**Optional Parameters:**
+- `taskId` (string): Show all entities linked to this task
+- `personId` (string): Show all tasks linked to this person
+- `companyId` (string): Show all tasks linked to this company
+- `opportunityId` (string): Show all tasks linked to this opportunity
+- `limit` (number): Results to return (max 60, default 20)
+
+**When to Use:**
+- "Show all tasks for Acme Corp"
+- "What tasks are linked to Sarah?"
+- Preparing for customer meetings
+- Understanding task relationships
+
+---
+
+#### `mcp__twenty-crm__delete_task_target`
+**Purpose:** Remove task-record link
+
+**Required Parameters:**
+- `id` (string): TaskTarget ID
+
+**When to Use:**
+- Removing outdated task associations
+- Cleaning up incorrect links
+- Reorganizing task relationships
+
+---
+
+### NoteTarget Management
+
+#### `mcp__twenty-crm__create_note_target`
+**Purpose:** Link a note to a person, company, or opportunity
+
+**Required Parameters:**
+- `noteId` (string): Note ID to link
+
+**Optional Parameters (at least one required):**
+- `personId` (string): Person ID to link the note to
+- `companyId` (string): Company ID to link the note to
+- `opportunityId` (string): Opportunity ID to link the note to
+
+**When to Use:**
+- Associate meeting notes with participants
+- Link account research to companies
+- Connect call summaries to specific contacts
+- Document insights related to opportunities
+
+**Example Workflows:**
+```
+"Link these meeting notes to the Enterprise Deal"
+"Associate this research note with Acme Corp"
+"Link the call summary to Sarah Johnson"
+```
+
+**Common Pattern - Creating Note with Relationships:**
+```
+User: "Add a note about our call with Sarah at Acme Corp"
+
+Step 1: Create the note
+→ create_note({ title: "Call with Sarah", body: "Discussed pricing..." })
+→ Returns: { id: "note-456", ... }
+
+Step 2: Link to relevant entities
+→ create_note_target({ noteId: "note-456", personId: "sarah-id" })
+→ create_note_target({ noteId: "note-456", companyId: "acme-id" })
+
+Result: Note appears on both Sarah's and Acme Corp's records
+```
+
+**Why Two Steps:**
+- Notes can be linked to multiple entities simultaneously
+- Allows adding/removing relationships independently
+- Matches Twenty CRM's database structure
+
+---
+
+#### `mcp__twenty-crm__list_note_targets`
+**Purpose:** List note-record relationships
+
+**Optional Parameters:**
+- `noteId` (string): Show all entities linked to this note
+- `personId` (string): Show all notes linked to this person
+- `companyId` (string): Show all notes linked to this company
+- `opportunityId` (string): Show all notes linked to this opportunity
+- `limit` (number): Results to return (max 60, default 20)
+
+**When to Use:**
+- "Show all notes about TechCo"
+- "What meeting notes do we have for Sarah?"
+- Preparing customer history
+- Gathering context before calls
+
+---
+
+#### `mcp__twenty-crm__delete_note_target`
+**Purpose:** Remove note-record link
+
+**Required Parameters:**
+- `id` (string): NoteTarget ID
+
+---
+
+### Timeline Activities
+
+#### `mcp__twenty-crm__create_timeline_activity`
+**Purpose:** Create timeline activity events to track interactions, events, and changes in CRM
+
+**Required Parameters:**
+- `name` (string): Activity name/title
+
+**Optional Parameters:**
+- `properties` (object): JSON object with activity details (e.g., {type: 'CALL', notes: 'Discussed pricing'})
+- `happensAt` (string): When the activity occurred (ISO 8601 format)
+- `workspaceMemberId` (string): Associated workspace member
+- `personId` (string): Related person
+- `companyId` (string): Related company
+- `opportunityId` (string): Related opportunity
+- `noteId` (string): Related note
+- `taskId` (string): Related task
+- `linkedRecordId` (string): Linked record ID
+- `linkedObjectMetadataId` (string): Linked object metadata ID
+- `linkedRecordCachedName` (string): Cached name of linked record
+
+**When to Use:**
+- Logging customer interactions
+- Tracking communication history
+- Recording system events
+- Building complete event timeline
+- Documenting touchpoints and changes
+
+**Example Workflows:**
+```
+"Create a timeline activity for a call with TechCo about pricing"
+"Log a meeting event for Sarah Johnson on November 15th"
+"Record an interaction with the proposal sent to Acme Corp"
+"Track a customer visit to the trade show booth"
+```
+
+**Properties Object Examples:**
+```json
+{
+  "type": "CALL",
+  "duration": "30 minutes",
+  "outcome": "positive"
+}
+
+{
+  "type": "MEETING",
+  "attendees": ["Sarah Johnson", "John Doe"],
+  "topics": ["pricing", "timeline"]
+}
+```
+
+---
+
+#### `mcp__twenty-crm__get_timeline_activity`
+**Purpose:** Retrieve timeline activity details
+
+**Required Parameters:**
+- `id` (string): Timeline activity ID
+
+---
+
+#### `mcp__twenty-crm__list_timeline_activities`
+**Purpose:** Search and filter timeline activities
+
+**Optional Parameters:**
+- `limit` (number): Results to return (max 60, default 20)
+- `searchTerm` (string): Search by activity name
+- `personId` (string): Filter by person
+- `companyId` (string): Filter by company
+- `opportunityId` (string): Filter by opportunity
+- `workspaceMemberId` (string): Filter by workspace member
+- `noteId` (string): Filter by note
+- `taskId` (string): Filter by task
+
+**When to Use:**
+- "Show all timeline activities for Acme Corp"
+- "What events happened with Sarah Johnson?"
+- "Find all activities related to this opportunity"
+- Building customer interaction history
+- Preparing for follow-ups
+
+---
+
+#### `mcp__twenty-crm__update_timeline_activity`
+**Purpose:** Edit timeline activity details
+
+**Required Parameters:**
+- `id` (string): Timeline activity ID
+
+**Optional Parameters:**
+- `name` (string): Updated name
+- `properties` (object): Updated details
+- `happensAt` (string): Updated occurrence time
+- Other fields as needed
+
+---
+
+### Favorites Management
+
+#### `mcp__twenty-crm__add_favorite`
+**Purpose:** Add records to favorites for quick access
+
+**Optional Parameters (at least one required):**
+- `personId` (string): Person to favorite
+- `companyId` (string): Company to favorite
+- `opportunityId` (string): Opportunity to favorite
+- `position` (number): Position in favorites list
+
+**When to Use:**
+- Marking key accounts for quick access
+- Favoriting important contacts
+- Prioritizing hot opportunities
+- Building personal workspace shortcuts
+
+**Example Workflows:**
+```
+"Add Acme Corp to my favorites"
+"Favorite Sarah Johnson for quick access"
+"Add the Enterprise Deal to favorites"
+```
+
+---
+
+#### `mcp__twenty-crm__get_favorite`
+**Purpose:** Retrieve favorite details
+
+**Required Parameters:**
+- `id` (string): Favorite ID
+
+---
+
+#### `mcp__twenty-crm__list_favorites`
+**Purpose:** List all favorited records
+
+**Optional Parameters:**
+- `limit` (number): Results to return (max 60, default 20)
+- `personId` (string): Filter favorites by person
+- `companyId` (string): Filter favorites by company
+- `opportunityId` (string): Filter favorites by opportunity
+- `workspaceMemberId` (string): Filter by workspace member
+
+**When to Use:**
+- "Show my favorite companies"
+- "List all favorited contacts"
+- Quick access to priority accounts
+- Building daily work lists
+
+---
+
+#### `mcp__twenty-crm__remove_favorite`
+**Purpose:** Remove record from favorites
+
+**Required Parameters:**
+- `id` (string): Favorite ID
+
+**When to Use:**
+- Cleaning up favorites list
+- Removing completed or inactive accounts
+- Reorganizing priorities
+
+---
+
 ## Data Structures and Field Types
 
 ### Understanding Composite Fields

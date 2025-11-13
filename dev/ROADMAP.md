@@ -1,12 +1,12 @@
 # Twenty CRM MCP Server - Development Roadmap
 
-**Last Updated:** November 12, 2025
-**Current Version:** 0.4.0
-**Total Tools:** 20 across 5 domains
+**Last Updated:** November 13, 2025
+**Current Version:** 0.5.0
+**Total Tools:** 34 across 8 domains
 
 ---
 
-## 📊 Current State (v0.4.0)
+## 📊 Current State (v0.5.0)
 
 ### Completed Domains
 
@@ -17,12 +17,19 @@
 | **Opportunity** | 4 | ✅ Complete | v0.2.0 |
 | **Task** | 4 | ✅ Complete | v0.4.0 |
 | **Note** | 4 | ✅ Complete | v0.4.0 |
+| **TaskTarget** | 3 | ✅ Complete | v0.5.0 |
+| **NoteTarget** | 3 | ✅ Complete | v0.5.0 |
+| **Activity** | 4 | ✅ Complete | v0.5.0 |
+| **Favorite** | 4 | ✅ Complete | v0.5.0 |
 
-**Total:** 20 tools
+**Total:** 34 tools
 
 ### Test Coverage
-- 49 passing tests
+- 74 passing tests (+25 from v0.4.0)
 - All CRUD operations covered
+- Relationship linking verified
+- Activity timeline tested
+- Favorites management covered
 - Composite type transformations verified
 - Live MCP integration tested
 
@@ -47,150 +54,100 @@ We follow a **natural growth approach**, implementing features in order of:
 
 ---
 
-## 🚀 Version 0.5.0 - Relationships & Context
+## ✅ Version 0.5.0 - Relationships & Context (COMPLETED)
 
 **Theme:** Complete the core CRM workflow with relationships and activity tracking
 
-**Target Date:** Q1 2025
-**Estimated Effort:** 6-9 hours
-**New Tools:** 12-14 tools
+**Released:** November 13, 2025
+**Actual Effort:** ~7 hours
+**New Tools:** 14 tools delivered
+**Test Coverage:** +25 tests (49 → 74)
+
+### Delivered Features
+
+#### ✅ Task/Note Targets - COMPLETED
+**Tools Delivered:** 6 tools
+- ✅ `create_task_target` - Link tasks to records
+- ✅ `list_task_targets` - List task-record relationships
+- ✅ `delete_task_target` - Remove task links
+- ✅ `create_note_target` - Link notes to records
+- ✅ `list_note_targets` - List note-record relationships
+- ✅ `delete_note_target` - Remove note links
+
+**Impact:** Tasks and notes can now be properly associated with people, companies, and opportunities, providing essential context.
+
+#### ✅ Activity Timeline - COMPLETED
+**Tools Delivered:** 4 tools
+- ✅ `create_activity` - Log interactions (CALL, EMAIL, MEETING, etc.)
+- ✅ `get_activity` - Retrieve activity details
+- ✅ `list_activities` - Search and filter timeline
+- ✅ `update_activity` - Edit activity information
+
+**Impact:** Complete interaction history and customer journey tracking now available.
+
+#### ✅ Favorites Management - COMPLETED
+**Tools Delivered:** 4 tools
+- ✅ `add_favorite` - Add records to favorites
+- ✅ `get_favorite` - Retrieve favorite details
+- ✅ `list_favorites` - List all favorited records
+- ✅ `remove_favorite` - Remove from favorites
+
+**Impact:** Quick access to priority accounts, contacts, and opportunities.
+
+### Success Metrics
+- ✅ 34 total tools (20 → 34)
+- ✅ Complete relationship graph implemented
+- ✅ Activity history for all interactions
+- ✅ Improved UX with favorites
+- ✅ 74 passing tests (49 → 74)
+- ✅ Documentation fully updated
+- ✅ All three planned features delivered
+
+---
+
+## 🚀 Version 0.6.0 - Power Features (PLANNED)
+
+**Theme:** Automation and advanced functionality
+
+**Target Date:** Q2 2025
+**Estimated Effort:** 10-14 hours
+**New Tools:** 12-16 tools
 
 ### Priority Features
 
-#### 1. Task/Note Targets ⭐⭐⭐ HIGH PRIORITY
-**Effort:** 2-3 hours | **Tools:** 6-8 | **Impact:** Very High
-
-Enable linking tasks and notes to other CRM objects (people, companies, opportunities).
-
-**Why This First:**
-- Natural extension of v0.4.0 task/note features
-- Makes tasks and notes significantly more useful
-- Simple implementation (similar to existing relationships)
-- Immediate value to users
+#### 1. Workflow Automation ⭐⭐⭐ HIGH PRIORITY
+**Effort:** 8-10 hours | **Tools:** 8-10 | **Impact:** Very High
 
 **API Objects:**
-- `taskTargets` - Link tasks to records
-- `noteTargets` - Link notes to records
+- `workflows` - Automation rules
+- `workflowTriggers` - Event triggers
+- `workflowActions` - Actions to execute
 
 **New Tools:**
 ```
-create_task_target    - Link task to person/company/opportunity
-get_task_target       - Get task target by ID
-list_task_targets     - List all targets for a task
-delete_task_target    - Remove task target link
-
-create_note_target    - Link note to person/company/opportunity
-get_note_target       - Get note target by ID
-list_note_targets     - List all targets for a note
-delete_note_target    - Remove note target link
+create_workflow      - Create automation workflow
+get_workflow         - Get workflow by ID
+list_workflows       - List all workflows
+update_workflow      - Update workflow configuration
+delete_workflow      - Remove workflow
+execute_workflow     - Manually trigger workflow
+list_workflow_runs   - View execution history
+get_workflow_run     - Get run details
 ```
 
-**Use Cases:**
-- "Create a follow-up task for Acme Corp"
-- "Add a note about the Enterprise Deal"
-- "Show all tasks related to Sarah Johnson"
-- "List notes for company XYZ"
-
-**Technical Notes:**
-- New relationship composite type
-- Link to existing task/note IDs
-- Polymorphic target types (person, company, opportunity)
-
----
-
-#### 2. Activity Timeline ⭐⭐⭐ HIGH PRIORITY
-**Effort:** 3-4 hours | **Tools:** 4 | **Impact:** High
-
-Track all interactions and provide complete history for CRM records.
-
-**Why This Matters:**
-- Provides complete context for every record
-- Essential for understanding customer journey
-- Automatic activity tracking
-- Standard CRM feature expected by users
-
-**API Object:**
-- `timelineActivities` - All interactions and events
-
-**New Tools:**
-```
-create_activity    - Log a new activity/interaction
-get_activity       - Get activity by ID
-list_activities    - List activities (filter by record, date, type)
-update_activity    - Update activity details
-```
-
-**Use Cases:**
-- "Show me all activities for company Acme in the last month"
-- "What happened with this deal last week?"
-- "Log a phone call with Sarah"
-- "List all customer interactions"
-
-**Activity Types:**
-- Phone calls
-- Emails sent/received
-- Meetings
-- Notes created
-- Tasks completed
-- Status changes
-- Custom activities
-
-**Technical Notes:**
-- Polymorphic activity targets
-- Date range filtering critical
-- Activity type enum handling
-- Rich metadata support
-
----
-
-#### 3. Favorites Management ⭐⭐ MEDIUM PRIORITY
-**Effort:** 1-2 hours | **Tools:** 4-6 | **Impact:** Medium
-
-Quick access to frequently used records.
-
-**Why Include:**
-- Quick win for UX improvement
-- Simple implementation
-- Complements existing features
-- Users request this frequently
+#### 2. Attachments & Files ⭐⭐ MEDIUM PRIORITY
+**Effort:** 4-6 hours | **Tools:** 4-6 | **Impact:** Medium
 
 **API Objects:**
-- `favorites` - Favorite records
-- `favoriteFolders` - Organize favorites
+- `attachments` - File attachments
 
 **New Tools:**
 ```
-add_favorite         - Add record to favorites
-get_favorite         - Get favorite by ID
-list_favorites       - List all favorites (filter by type)
-remove_favorite      - Remove from favorites
-
-create_favorite_folder   - Create folder for organizing
-list_favorite_folders    - List all folders
+upload_attachment    - Upload file to record
+get_attachment       - Get attachment details
+list_attachments     - List record attachments
+delete_attachment    - Remove attachment
 ```
-
-**Use Cases:**
-- "Add Acme Corp to my favorites"
-- "Show my favorite contacts"
-- "Create a folder for enterprise clients"
-- "Remove this company from favorites"
-
-**Technical Notes:**
-- Link to any record type
-- Folder hierarchy support
-- User-specific favorites
-
----
-
-### V0.5.0 Success Metrics
-
-- ✅ 32-34 total tools (up from 20)
-- ✅ Complete relationship graph (tasks/notes linked to records)
-- ✅ Activity history for all interactions
-- ✅ Improved UX with favorites
-- ✅ 60+ passing tests
-- ✅ Documentation updated
-- ✅ Live MCP verification
 
 ---
 

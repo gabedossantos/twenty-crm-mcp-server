@@ -70,6 +70,45 @@ import {
   ListNotesParams,
 } from "./domains/note/index.js";
 
+import {
+  TASK_TARGET_TOOLS,
+  createTaskTarget,
+  listTaskTargets,
+  deleteTaskTarget,
+  CreateTaskTargetInput,
+  ListTaskTargetsParams,
+} from "./domains/taskTarget/index.js";
+
+import {
+  NOTE_TARGET_TOOLS,
+  createNoteTarget,
+  listNoteTargets,
+  deleteNoteTarget,
+  CreateNoteTargetInput,
+  ListNoteTargetsParams,
+} from "./domains/noteTarget/index.js";
+
+import {
+  ACTIVITY_TOOLS,
+  createTimelineActivity,
+  getTimelineActivity,
+  listTimelineActivities,
+  updateTimelineActivity,
+  CreateTimelineActivityInput,
+  UpdateTimelineActivityInput,
+  ListTimelineActivitiesParams,
+} from "./domains/activity/index.js";
+
+import {
+  FAVORITE_TOOLS,
+  addFavorite,
+  getFavorite,
+  listFavorites,
+  removeFavorite,
+  AddFavoriteInput,
+  ListFavoritesParams,
+} from "./domains/favorite/index.js";
+
 /**
  * Main Twenty CRM MCP Server
  */
@@ -82,7 +121,7 @@ class TwentyCRMServer {
     this.server = new Server(
       {
         name: "twenty-crm",
-        version: "0.4.0",
+        version: "0.5.0",
       },
       {
         capabilities: {
@@ -111,6 +150,10 @@ class TwentyCRMServer {
           ...OPPORTUNITY_TOOLS,
           ...TASK_TOOLS,
           ...NOTE_TOOLS,
+          ...TASK_TARGET_TOOLS,
+          ...NOTE_TARGET_TOOLS,
+          ...ACTIVITY_TOOLS,
+          ...FAVORITE_TOOLS,
         ],
       };
     });
@@ -232,6 +275,84 @@ class TwentyCRMServer {
               args as unknown as UpdateNoteInput
             );
 
+          // Task Target operations
+          case "create_task_target":
+            return await createTaskTarget(
+              this.client,
+              args as unknown as CreateTaskTargetInput
+            );
+          case "list_task_targets":
+            return await listTaskTargets(
+              this.client,
+              (args || {}) as unknown as ListTaskTargetsParams
+            );
+          case "delete_task_target":
+            return await deleteTaskTarget(
+              this.client,
+              (args as unknown as { id: string }).id
+            );
+
+          // Note Target operations
+          case "create_note_target":
+            return await createNoteTarget(
+              this.client,
+              args as unknown as CreateNoteTargetInput
+            );
+          case "list_note_targets":
+            return await listNoteTargets(
+              this.client,
+              (args || {}) as unknown as ListNoteTargetsParams
+            );
+          case "delete_note_target":
+            return await deleteNoteTarget(
+              this.client,
+              (args as unknown as { id: string }).id
+            );
+
+          // TimelineActivity operations
+          case "create_timeline_activity":
+            return await createTimelineActivity(
+              this.client,
+              args as unknown as CreateTimelineActivityInput
+            );
+          case "get_timeline_activity":
+            return await getTimelineActivity(
+              this.client,
+              (args as unknown as { id: string }).id
+            );
+          case "list_timeline_activities":
+            return await listTimelineActivities(
+              this.client,
+              (args || {}) as unknown as ListTimelineActivitiesParams
+            );
+          case "update_timeline_activity":
+            return await updateTimelineActivity(
+              this.client,
+              args as unknown as UpdateTimelineActivityInput
+            );
+
+          // Favorite operations
+          case "add_favorite":
+            return await addFavorite(
+              this.client,
+              args as unknown as AddFavoriteInput
+            );
+          case "get_favorite":
+            return await getFavorite(
+              this.client,
+              (args as unknown as { id: string }).id
+            );
+          case "list_favorites":
+            return await listFavorites(
+              this.client,
+              (args || {}) as unknown as ListFavoritesParams
+            );
+          case "remove_favorite":
+            return await removeFavorite(
+              this.client,
+              (args as unknown as { id: string }).id
+            );
+
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -347,6 +468,62 @@ class TwentyCRMServer {
 
   async updateNote(data: UpdateNoteInput) {
     return updateNote(this.client, data);
+  }
+
+  async createTaskTarget(data: CreateTaskTargetInput) {
+    return createTaskTarget(this.client, data);
+  }
+
+  async listTaskTargets(params: ListTaskTargetsParams = {}) {
+    return listTaskTargets(this.client, params);
+  }
+
+  async deleteTaskTarget(id: string) {
+    return deleteTaskTarget(this.client, id);
+  }
+
+  async createNoteTarget(data: CreateNoteTargetInput) {
+    return createNoteTarget(this.client, data);
+  }
+
+  async listNoteTargets(params: ListNoteTargetsParams = {}) {
+    return listNoteTargets(this.client, params);
+  }
+
+  async deleteNoteTarget(id: string) {
+    return deleteNoteTarget(this.client, id);
+  }
+
+  async createTimelineActivity(data: CreateTimelineActivityInput) {
+    return createTimelineActivity(this.client, data);
+  }
+
+  async getTimelineActivity(id: string) {
+    return getTimelineActivity(this.client, id);
+  }
+
+  async listTimelineActivities(params: ListTimelineActivitiesParams = {}) {
+    return listTimelineActivities(this.client, params);
+  }
+
+  async updateTimelineActivity(data: UpdateTimelineActivityInput) {
+    return updateTimelineActivity(this.client, data);
+  }
+
+  async addFavorite(data: AddFavoriteInput) {
+    return addFavorite(this.client, data);
+  }
+
+  async getFavorite(id: string) {
+    return getFavorite(this.client, id);
+  }
+
+  async listFavorites(params: ListFavoritesParams = {}) {
+    return listFavorites(this.client, params);
+  }
+
+  async removeFavorite(id: string) {
+    return removeFavorite(this.client, id);
   }
 }
 
