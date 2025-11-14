@@ -10,6 +10,8 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import { realpathSync } from "fs";
+import { pathToFileURL } from "url";
 
 // Shared utilities
 import { createGraphQLClient, GraphQLClient } from "./shared/graphql-client.js";
@@ -114,14 +116,21 @@ import {
  */
 class TwentyCRMServer {
   private server: Server;
-  private client: GraphQLClient;
+  private _client: GraphQLClient | null = null;
+
+  private get client(): GraphQLClient {
+    if (!this._client) {
+      this._client = createGraphQLClient();
+    }
+    return this._client;
+  }
 
   constructor() {
     // Initialize MCP Server
     this.server = new Server(
       {
         name: "twenty-crm",
-        version: "0.5.0",
+        version: "0.5.4",
       },
       {
         capabilities: {
@@ -129,9 +138,6 @@ class TwentyCRMServer {
         },
       }
     );
-
-    // Initialize GraphQL client
-    this.client = createGraphQLClient();
 
     // Setup handlers
     this.setupToolHandlers();
@@ -531,7 +537,11 @@ class TwentyCRMServer {
 export { TwentyCRMServer };
 
 // Start server if run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Note: Uses realpathSync to handle symlinks (e.g., when run via npx or npm bin)
+const realPath = realpathSync(process.argv[1]);
+const realPathAsUrl = pathToFileURL(realPath).href;
+
+if (import.meta.url === realPathAsUrl) {
   const server = new TwentyCRMServer();
   server.run().catch(console.error);
 }

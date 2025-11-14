@@ -2546,10 +2546,14 @@ describe('TwentyCRMServer', () => {
       ).rejects.toThrow('Network error');
     });
 
-    it('should throw error when API key is missing', () => {
+    it('should throw error when API key is missing', async () => {
       delete process.env.TWENTY_API_KEY;
 
-      expect(() => new TwentyCRMServer()).toThrow('TWENTY_API_KEY environment variable is required');
+      const server = new TwentyCRMServer();
+      // Error should be thrown when first accessing the client
+      await expect(
+        server.graphqlRequest('query { test }')
+      ).rejects.toThrow('TWENTY_API_KEY environment variable is required');
 
       // Restore for other tests
       process.env.TWENTY_API_KEY = 'test-api-key';
