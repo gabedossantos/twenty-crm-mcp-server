@@ -24,6 +24,12 @@ export interface CRUDConfig<TCreate, TUpdate, TEntity, TGraphQLInput, TListParam
   buildListFilter: (params: TListParams) => Record<string, unknown> | null;
   formatCreateSuccess?: (entity: TEntity) => string;
   formatListSummary?: (count: number, hasMore: boolean) => string;
+  afterCreate?: (params: {
+    client: GraphQLClient;
+    entity: TEntity;
+    originalInput: TCreate;
+    graphQLInput: TGraphQLInput;
+  }) => Promise<TEntity | void> | TEntity | void;
 }
 
 /**
@@ -62,7 +68,20 @@ export function createCRUDHandlers<
       { input }
     );
 
-    const entity = result[`create${entityNameCapitalized}`];
+    let entity = result[`create${entityNameCapitalized}`];
+
+    if (config.afterCreate) {
+      const maybeUpdated = await config.afterCreate({
+        client,
+        entity,
+        originalInput: data,
+        graphQLInput: input,
+      });
+      if (maybeUpdated) {
+        entity = maybeUpdated;
+      }
+    }
+
     const successMessage = formatCreateSuccess
       ? formatCreateSuccess(entity)
       : `✅ Created ${entityName}`;

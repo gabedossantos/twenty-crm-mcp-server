@@ -110,10 +110,37 @@ export function currencyFromMicros(
  * Creates both blocknote and markdown representations
  */
 export function transformBodyV2(text: string): BodyV2Composite {
-  // For simplicity, use the same text for both formats
-  // In a production environment, you might want to convert markdown to BlockNote format
+  const normalized = text.trim();
   return {
-    blocknote: text,
-    markdown: text,
+    blocknote: convertTextToBlockNote(normalized),
+    markdown: normalized,
   };
+}
+
+/**
+ * Convert plain text/markdown to a minimal BlockNote JSON document string
+ */
+function convertTextToBlockNote(text: string): string {
+  const sanitized = text.replace(/\r/g, "");
+  const paragraphs = sanitized
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph.length > 0);
+
+  const blocks = (paragraphs.length > 0 ? paragraphs : [""]).map(
+    (paragraph, index) => ({
+      id: `block-${index + 1}`,
+      type: "paragraph",
+      props: { textAlignment: "left" },
+      content: [
+        {
+          type: "text",
+          text: paragraph,
+          styles: {},
+        },
+      ],
+    })
+  );
+
+  return JSON.stringify(blocks);
 }

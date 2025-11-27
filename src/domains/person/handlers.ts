@@ -3,6 +3,7 @@
  */
 
 import { createCRUDHandlers } from "../../shared/base-handler.js";
+import { GraphQLClient } from "../../shared/graphql-client.js";
 import {
   transformEmail,
   transformPhone,
@@ -22,6 +23,53 @@ import {
   Person,
   PersonGraphQLInput,
 } from "./types.js";
+
+/**
+ * Ensure critical custom fields are populated after creation.
+ * Some create mutations may drop optional fields if an upstream validation fails,
+ * so we immediately patch any missing values via updatePerson.
+ */
+async function ensureCustomFieldsAfterCreate({
+  client,
+  entity,
+  originalInput,
+}: {
+  client: GraphQLClient;
+  entity: Person;
+  originalInput: CreatePersonInput;
+}) {
+  const missingFields: Partial<PersonGraphQLInput> = {};
+
+  if (originalInput.education && !entity.education) {
+    missingFields.education = originalInput.education;
+  }
+
+  if (originalInput.experience && !entity.experience) {
+    missingFields.experience = originalInput.experience;
+  }
+
+  if (originalInput.addresss && !entity.addresss) {
+    missingFields.addresss = originalInput.addresss;
+  }
+
+  if (originalInput.description && !entity.description) {
+    missingFields.description = originalInput.description;
+  }
+
+  if (Object.keys(missingFields).length === 0) {
+    return;
+  }
+
+  const updateResult = await client.request<Record<string, Person>>(
+    UPDATE_PERSON_MUTATION,
+    {
+      id: entity.id,
+      input: missingFields,
+    }
+  );
+
+  return updateResult.updatePerson;
+}
 
 /**
  * Transform create input to GraphQL format
@@ -47,6 +95,10 @@ function transformCreateInput(data: CreatePersonInput): PersonGraphQLInput {
   if (data.jobTitle) input.jobTitle = data.jobTitle;
   if (data.city) input.city = data.city;
   if (data.companyId) input.companyId = data.companyId;
+  if (data.education) input.education = data.education;
+  if (data.addresss) input.addresss = data.addresss;
+  if (data.description) input.description = data.description;
+  if (data.experience) input.experience = data.experience;
 
   return input;
 }
@@ -83,6 +135,10 @@ function transformUpdateInput(
   if (updates.jobTitle !== undefined) input.jobTitle = updates.jobTitle;
   if (updates.city !== undefined) input.city = updates.city;
   if (updates.companyId !== undefined) input.companyId = updates.companyId;
+  if (updates.education !== undefined) input.education = updates.education;
+  if (updates.addresss !== undefined) input.addresss = updates.addresss;
+  if (updates.description !== undefined) input.description = updates.description;
+  if (updates.experience !== undefined) input.experience = updates.experience;
 
   return input;
 }
@@ -128,6 +184,7 @@ const handlers = createCRUDHandlers<
   transformCreateInput,
   transformUpdateInput,
   buildListFilter,
+  afterCreate: ensureCustomFieldsAfterCreate,
   formatCreateSuccess: (person) =>
     `✅ Created person: ${person.name.firstName} ${person.name.lastName}`,
 });

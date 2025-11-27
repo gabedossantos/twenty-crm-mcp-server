@@ -55,6 +55,22 @@ export const PERSON_TOOLS: Tool[] = [
           type: "string",
           description: "City",
         },
+        education: {
+          type: "string",
+          description: "Education summary (text custom field)",
+        },
+        addresss: {
+          type: "string",
+          description: "Mailing address (custom text field)",
+        },
+        description: {
+          type: "string",
+          description: "General description/notes (custom text field)",
+        },
+        experience: {
+          type: "string",
+          description: "Experience/notes (custom text field)",
+        },
       },
       required: ["firstName", "lastName"],
     },
@@ -109,6 +125,22 @@ export const PERSON_TOOLS: Tool[] = [
         linkedinUrl: { type: "string", description: "LinkedIn profile URL" },
         xUrl: { type: "string", description: "X/Twitter profile URL" },
         city: { type: "string", description: "City" },
+        education: {
+          type: "string",
+          description: "Education summary (text custom field)",
+        },
+        addresss: {
+          type: "string",
+          description: "Mailing address (custom text field)",
+        },
+        description: {
+          type: "string",
+          description: "General description/notes (custom text field)",
+        },
+        experience: {
+          type: "string",
+          description: "Experience/notes (custom text field)",
+        },
       },
       required: ["id"],
     },

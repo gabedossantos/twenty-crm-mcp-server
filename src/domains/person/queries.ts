@@ -21,6 +21,10 @@ export const CREATE_PERSON_MUTATION = `
       }
       jobTitle
       city
+      education
+      addresss
+      description
+      experience
       linkedinLink {
         primaryLinkUrl
       }
@@ -32,7 +36,6 @@ export const CREATE_PERSON_MUTATION = `
     }
   }
 `;
-
 export const GET_PERSON_QUERY = `
   query GetPerson($id: UUID!) {
     person(filter: { id: { eq: $id } }) {
@@ -65,6 +68,10 @@ export const GET_PERSON_QUERY = `
         id
         name
       }
+      education
+      addresss
+      description
+      experience
       createdAt
       updatedAt
     }
@@ -94,6 +101,10 @@ export const LIST_PEOPLE_QUERY = `
             id
             name
           }
+          education
+          addresss
+          description
+          experience
         }
       }
       pageInfo {
@@ -120,6 +131,10 @@ export const UPDATE_PERSON_MUTATION = `
       }
       jobTitle
       city
+      education
+      addresss
+      description
+      experience
       updatedAt
     }
   }

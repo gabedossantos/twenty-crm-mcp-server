@@ -25,6 +25,10 @@ export interface CreatePersonInput {
   linkedinUrl?: string;
   xUrl?: string;
   city?: string;
+  education?: string;
+  addresss?: string;
+  description?: string;
+  experience?: string;
 }
 
 export interface UpdatePersonInput {
@@ -40,6 +44,10 @@ export interface UpdatePersonInput {
   linkedinUrl?: string;
   xUrl?: string;
   city?: string;
+  education?: string;
+  addresss?: string;
+  description?: string;
+  experience?: string;
 }
 
 export interface ListPeopleParams {
@@ -61,6 +69,10 @@ export interface PersonGraphQLInput {
   jobTitle?: string;
   city?: string;
   companyId?: string;
+  education?: string;
+  addresss?: string;
+  description?: string;
+  experience?: string;
 }
 
 // ======================
@@ -81,6 +93,10 @@ export interface Person {
     id: string;
     name: string;
   };
+  education?: string;
+  addresss?: string;
+  description?: string;
+  experience?: string;
   createdAt: string;
   updatedAt?: string;
 }
