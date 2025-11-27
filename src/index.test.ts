@@ -255,6 +255,46 @@ describe('TwentyCRMServer', () => {
         expect(result.content[0].text).toContain('Found 0 people');
       });
 
+      it('should split full-name search terms across first and last name filters', async () => {
+        const mockResponse = {
+          data: {
+            people: {
+              edges: [],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false
+              }
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        await server.listPeople({ searchTerm: 'Victor Mora' });
+
+        const [, requestInit] = mockFetch.mock.calls[0];
+        const payload = JSON.parse((requestInit as { body: string }).body);
+        const filters = payload.variables.filter.or;
+
+        expect(filters).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              and: [
+                { name: { firstName: { ilike: '%Victor%' } } },
+                { name: { lastName: { ilike: '%Mora%' } } }
+              ]
+            }),
+            expect.objectContaining({ name: { firstName: { ilike: '%Victor%' } } }),
+            expect.objectContaining({ name: { lastName: { ilike: '%Victor%' } } }),
+            expect.objectContaining({ name: { firstName: { ilike: '%Mora%' } } }),
+            expect.objectContaining({ name: { lastName: { ilike: '%Mora%' } } })
+          ])
+        );
+      });
+
       it('should list people with companyId filter', async () => {
         const mockResponse = {
           data: {
@@ -2530,6 +2570,158 @@ describe('TwentyCRMServer', () => {
 
         expect(result.content[0].text).toContain('Removed favorite');
         expect(result.content[0].text).toContain('fav-123');
+      });
+    });
+  });
+
+  describe('Attachment Operations', () => {
+    describe('createAttachment', () => {
+      it('should create and link an attachment to a task', async () => {
+        const mockResponse = {
+          data: {
+            createAttachment: {
+              id: 'att-123',
+              name: 'Quarterly_Report.pdf',
+              fullPath: '/tmp/Quarterly_Report.pdf',
+              fileCategory: 'TEXT_DOCUMENT',
+              taskId: 'task-123',
+              companyId: null,
+              personId: null,
+              opportunityId: null,
+              workflowId: null,
+              dashboardId: null,
+              authorId: 'user-123',
+              createdAt: '2024-03-01T00:00:00Z',
+              updatedAt: null,
+              deletedAt: null
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.createAttachment({
+          name: 'Quarterly_Report.pdf',
+          fullPath: '/tmp/Quarterly_Report.pdf',
+          taskId: 'task-123'
+        });
+
+        expect(result.content[0].text).toContain('Created attachment');
+        expect(result.content[0].text).toContain('Linked to: task (task-123)');
+      });
+
+      it('should require at least one relationship ID', async () => {
+        await expect(
+          server.createAttachment({
+            name: 'Lonely.pdf',
+            fullPath: '/tmp/Lonely.pdf'
+          })
+        ).rejects.toThrow('At least one relationship ID');
+      });
+    });
+
+    describe('getAttachment', () => {
+      it('should retrieve an attachment by ID', async () => {
+        const mockResponse = {
+          data: {
+            attachment: {
+              id: 'att-123',
+              name: 'Board_Notes.txt',
+              fullPath: '/tmp/Board_Notes.txt',
+              fileCategory: 'TEXT_DOCUMENT',
+              companyId: 'company-123',
+              personId: null,
+              taskId: null,
+              opportunityId: null,
+              workflowId: null,
+              dashboardId: null,
+              authorId: 'user-123',
+              createdAt: '2024-03-02T00:00:00Z',
+              updatedAt: null,
+              deletedAt: null
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.getAttachment('att-123');
+
+        expect(result.content[0].text).toContain('Attachment details');
+        expect(result.content[0].text).toContain('Board_Notes.txt');
+      });
+    });
+
+    describe('listAttachments', () => {
+      it('should list attachments filtered by person', async () => {
+        const mockResponse = {
+          data: {
+            attachments: {
+              edges: [
+                {
+                  node: {
+                    id: 'att-201',
+                    name: 'Resume.pdf',
+                    fullPath: '/tmp/Resume.pdf',
+                    fileCategory: 'TEXT_DOCUMENT',
+                    personId: 'person-123',
+                    companyId: null,
+                    taskId: null,
+                    opportunityId: null,
+                    workflowId: null,
+                    dashboardId: null,
+                    authorId: 'user-123',
+                    createdAt: '2024-03-03T00:00:00Z',
+                    updatedAt: null,
+                    deletedAt: null
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false
+              }
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.listAttachments({ personId: 'person-123' });
+
+        expect(result.content[0].text).toContain('Found 1 attachment');
+        expect(result.content[0].text).toContain('Resume.pdf');
+      });
+    });
+
+    describe('deleteAttachment', () => {
+      it('should delete an attachment', async () => {
+        const mockResponse = {
+          data: {
+            deleteAttachment: {
+              id: 'att-123'
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.deleteAttachment('att-123');
+
+        expect(result.content[0].text).toContain('Deleted attachment');
+        expect(result.content[0].text).toContain('att-123');
       });
     });
   });

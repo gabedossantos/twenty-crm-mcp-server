@@ -151,11 +151,33 @@ function buildListFilter(params: ListPeopleParams): Record<string, unknown> | nu
   const filter: Record<string, unknown> = {};
 
   if (searchTerm) {
-    filter.or = [
-      { name: { firstName: { ilike: `%${searchTerm}%` } } },
-      { name: { lastName: { ilike: `%${searchTerm}%` } } },
-      { emails: { primaryEmail: { ilike: `%${searchTerm}%` } } },
+    const trimmed = searchTerm.trim();
+    const terms = trimmed.split(/\s+/).filter(Boolean);
+    const searchFilters: Record<string, unknown>[] = [
+      { name: { firstName: { ilike: `%${trimmed}%` } } },
+      { name: { lastName: { ilike: `%${trimmed}%` } } },
+      { emails: { primaryEmail: { ilike: `%${trimmed}%` } } },
     ];
+
+    if (terms.length >= 2) {
+      const first = terms[0];
+      const last = terms[terms.length - 1];
+
+      searchFilters.push({
+        and: [
+          { name: { firstName: { ilike: `%${first}%` } } },
+          { name: { lastName: { ilike: `%${last}%` } } },
+        ],
+      });
+    }
+
+    for (const term of terms) {
+      searchFilters.push({ name: { firstName: { ilike: `%${term}%` } } });
+      searchFilters.push({ name: { lastName: { ilike: `%${term}%` } } });
+      searchFilters.push({ emails: { primaryEmail: { ilike: `%${term}%` } } });
+    }
+
+    filter.or = searchFilters;
   }
   if (companyId) {
     filter.companyId = { eq: companyId };

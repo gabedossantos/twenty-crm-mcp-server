@@ -111,6 +111,16 @@ import {
   ListFavoritesParams,
 } from "./domains/favorite/index.js";
 
+import {
+  ATTACHMENT_TOOLS,
+  createAttachment,
+  getAttachment,
+  listAttachments,
+  deleteAttachment,
+  CreateAttachmentInput,
+  ListAttachmentsParams,
+} from "./domains/attachment/index.js";
+
 /**
  * Main Twenty CRM MCP Server
  */
@@ -130,7 +140,7 @@ class TwentyCRMServer {
     this.server = new Server(
       {
         name: "twenty-crm",
-        version: "0.5.4",
+        version: "0.6.0",
       },
       {
         capabilities: {
@@ -160,6 +170,7 @@ class TwentyCRMServer {
           ...NOTE_TARGET_TOOLS,
           ...ACTIVITY_TOOLS,
           ...FAVORITE_TOOLS,
+          ...ATTACHMENT_TOOLS,
         ],
       };
     });
@@ -359,6 +370,28 @@ class TwentyCRMServer {
               (args as unknown as { id: string }).id
             );
 
+          // Attachment operations
+          case "create_attachment":
+            return await createAttachment(
+              this.client,
+              args as unknown as CreateAttachmentInput
+            );
+          case "get_attachment":
+            return await getAttachment(
+              this.client,
+              (args as unknown as { id: string }).id
+            );
+          case "list_attachments":
+            return await listAttachments(
+              this.client,
+              (args || {}) as unknown as ListAttachmentsParams
+            );
+          case "delete_attachment":
+            return await deleteAttachment(
+              this.client,
+              (args as unknown as { id: string }).id
+            );
+
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
@@ -530,6 +563,22 @@ class TwentyCRMServer {
 
   async removeFavorite(id: string) {
     return removeFavorite(this.client, id);
+  }
+
+  async createAttachment(data: CreateAttachmentInput) {
+    return createAttachment(this.client, data);
+  }
+
+  async getAttachment(id: string) {
+    return getAttachment(this.client, id);
+  }
+
+  async listAttachments(params: ListAttachmentsParams = {}) {
+    return listAttachments(this.client, params);
+  }
+
+  async deleteAttachment(id: string) {
+    return deleteAttachment(this.client, id);
   }
 }
 
