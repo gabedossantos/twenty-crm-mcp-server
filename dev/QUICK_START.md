@@ -9,6 +9,7 @@
 ### Setup (5 minutes)
 - [ ] Create domain folder: `src/domains/[name]/`
 - [ ] Create 5 files: `types.ts`, `queries.ts`, `handlers.ts`, `tools.ts`, `index.ts`
+- [ ] Copy `.env.example` (or create `.env.local`) with `TWENTY_API_KEY`, `TWENTY_BASE_URL`, and machine-specific paths like `ATTACHMENT_LOCAL_ROOT`
 
 ### Implementation (2-4 hours)
 - [ ] Define types in `types.ts` (inputs, GraphQL, domain model)

@@ -119,7 +119,20 @@ export interface Attachment {
   createdAt: string;
   updatedAt?: string;
   deletedAt?: string | null;
+  localPreview?: AttachmentLocalPreview;
 }
+
+export type AttachmentLocalPreview =
+  | {
+      type: "text";
+      localPath: string;
+      content: string;
+      truncated: boolean;
+    }
+  | {
+      type: "binary";
+      localPath: string;
+    };
 
 // ======================
 // GRAPHQL RESPONSE TYPES

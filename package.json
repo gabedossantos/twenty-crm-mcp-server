@@ -23,7 +23,8 @@
     "prepublishOnly": "npm run build && npm test"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.6.0"
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "dotenv": "^17.2.3"
   },
   "engines": {
     "node": ">=18"
@@ -51,6 +52,7 @@
   },
   "homepage": "https://github.com/KonstiDoll/twenty-crm-mcp-server#readme",
   "devDependencies": {
+    "@types/dotenv": "^6.1.1",
     "@types/node": "^24.10.0",
     "@vitest/coverage-v8": "^4.0.8",
     "tsx": "^4.20.6",

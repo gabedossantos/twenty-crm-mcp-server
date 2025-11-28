@@ -1,4 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as os from 'node:os';
 
 // Mock environment variables before importing
 process.env.TWENTY_API_KEY = 'test-api-key';
@@ -21,6 +24,7 @@ describe('TwentyCRMServer', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    delete process.env.ATTACHMENT_LOCAL_ROOT;
   });
 
   describe('GraphQL Request Handler', () => {
@@ -2656,6 +2660,47 @@ describe('TwentyCRMServer', () => {
         expect(result.content[0].text).toContain('Attachment details');
         expect(result.content[0].text).toContain('Board_Notes.txt');
       });
+
+      it('should include local preview when ATTACHMENT_LOCAL_ROOT is set', async () => {
+        const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'attachments-'));
+        const localFilePath = path.join(tmpRoot, 'Notes.txt');
+        fs.writeFileSync(localFilePath, 'Local preview content');
+
+        process.env.ATTACHMENT_LOCAL_ROOT = tmpRoot;
+
+        const mockResponse = {
+          data: {
+            attachment: {
+              id: 'att-preview',
+              name: 'Notes.txt',
+              fullPath: localFilePath,
+              fileCategory: 'TEXT_DOCUMENT',
+              companyId: null,
+              personId: 'person-123',
+              taskId: null,
+              opportunityId: null,
+              workflowId: null,
+              dashboardId: null,
+              authorId: 'user-abc',
+              createdAt: '2024-03-04T00:00:00Z',
+              updatedAt: null,
+              deletedAt: null
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.getAttachment('att-preview');
+
+        expect(result.content[0].text).toContain('Local preview content');
+        expect(result.content[0].text).toContain('localPreview');
+
+        fs.rmSync(tmpRoot, { recursive: true, force: true });
+      });
     });
 
     describe('listAttachments', () => {
@@ -2700,6 +2745,56 @@ describe('TwentyCRMServer', () => {
 
         expect(result.content[0].text).toContain('Found 1 attachment');
         expect(result.content[0].text).toContain('Resume.pdf');
+      });
+
+      it('should resolve local previews when fullPath is an HTTP URL', async () => {
+        const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'attachments-'));
+        const fileName = 'cf274c9d-d5e9-484d-8a90-37f8825f9209.txt';
+        fs.writeFileSync(path.join(tmpRoot, fileName), 'HTTP sourced preview');
+
+        process.env.ATTACHMENT_LOCAL_ROOT = tmpRoot;
+
+        const mockResponse = {
+          data: {
+            attachments: {
+              edges: [
+                {
+                  node: {
+                    id: 'att-http',
+                    name: 'Call transcript Victor Mora Nov 25, 2025.mp4.txt',
+                    fullPath: `http://localhost/files/${fileName}`,
+                    fileCategory: 'TEXT_DOCUMENT',
+                    personId: 'person-123',
+                    companyId: null,
+                    taskId: null,
+                    opportunityId: null,
+                    workflowId: null,
+                    dashboardId: null,
+                    authorId: null,
+                    createdAt: '2025-11-25T19:32:49.469Z',
+                    updatedAt: null
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false
+              }
+            }
+          }
+        };
+
+        mockFetch.mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockResponse
+        });
+
+        const result = await server.listAttachments({ personId: 'person-123' });
+
+        expect(result.content[0].text).toContain('HTTP sourced preview');
+        expect(result.content[0].text).toContain('localPreview');
+
+        fs.rmSync(tmpRoot, { recursive: true, force: true });
       });
     });
 

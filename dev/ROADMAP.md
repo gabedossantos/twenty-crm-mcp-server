@@ -199,6 +199,7 @@ File management for CRM records.
 - Attach proposals to companies
 - Store meeting notes as files
 - Manage customer documents
+- Surface local previews in Mist via `ATTACHMENT_LOCAL_ROOT` (read from `.env.local` automatically)
 
 **Technical Challenges:**
 - File upload handling

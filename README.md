@@ -199,6 +199,23 @@ The easiest way to use this server is via npx:
    "TWENTY_BASE_URL": "https://your-twenty-instance.com"
    ```
 
+### Automatic Environment Loading (.env)
+
+The server now loads environment variables from `.env.local` (preferred) and `.env` automatically on startup—no more manual `export` before launching Mist/Claude.
+
+1. Create a `.env.local` file in the project root (same folder as `package.json`).
+2. Add any sensitive or machine-specific values:
+
+  ```bash
+  TWENTY_API_KEY=sk_live_...
+  TWENTY_BASE_URL=https://app.twenty.com
+  ATTACHMENT_LOCAL_ROOT=/Volumes/4TB/Twenty/twenty/attachments/workspace-10cf6632-1bb4-439a-acdb-bd3011a1435e/attachment
+  ```
+
+3. Restart your MCP client (Mist/Claude). The loader will pull these values into `process.env` before the server registers its tools, so attachment previews and API calls work without re-exporting paths.
+
+> `.env.local` stays git-ignored; use `.env` only for default values you’re comfortable sharing with collaborators.
+
 6. **Restart Claude Desktop**
 
 ## 💬 Usage
