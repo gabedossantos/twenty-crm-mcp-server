@@ -218,6 +218,40 @@ The server now loads environment variables from `.env.local` (preferred) and `.e
 
 6. **Restart Claude Desktop**
 
+### HTTP/SSE Mode (Dify & HTTP Clients)
+
+The server still defaults to stdio for Claude/Msty, but you can expose an HTTP SSE endpoint for platforms like Dify by setting `MCP_TRANSPORT=http`. Additional knobs:
+
+- `MCP_HTTP_HOST` – interface to bind (default `127.0.0.1`; use `0.0.0.0` for Docker)
+- `MCP_HTTP_PORT` – listening port (default `8088`)
+- `MCP_HTTP_PATH` – SSE route (default `/sse`)
+
+**Quick start:**
+
+```bash
+MCP_TRANSPORT=http MCP_HTTP_HOST=0.0.0.0 MCP_HTTP_PORT=8088 npm start
+```
+
+This boots an HTTP server with:
+
+- `GET /sse` – establishes the SSE stream and emits the POST endpoint
+- `POST /sse?sessionId=...` – receives JSON-RPC payloads from the client
+- `GET /healthz` – simple health probe for Docker/compose
+
+To wire up Dify:
+
+1. In Dify UI, open **Tools → MCP → Add MCP Server**
+2. Choose **SSE** and set the URL to `http://host.docker.internal:8088/sse`
+3. Save, then enable the desired tools inside your Agent/Workflow
+
+From inside the Dify container you can verify connectivity with:
+
+```bash
+curl -i http://host.docker.internal:8088/sse | head
+```
+
+If the curl succeeds, Dify will list all exposed tools automatically. When you omit `MCP_TRANSPORT=http`, the binary continues to launch in stdio mode for Claude Desktop with no configuration changes.
+
 ## 💬 Usage
 
 Once configured, interact with your CRM using natural language:

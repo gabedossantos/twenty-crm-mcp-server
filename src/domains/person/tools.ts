@@ -39,6 +39,10 @@ export const PERSON_TOOLS: Tool[] = [
           type: "string",
           description: "Job title",
         },
+        title: {
+          type: "string",
+          description: "Alternate title/custom honorific",
+        },
         companyId: {
           type: "string",
           description: "Company ID to associate with",
@@ -55,6 +59,14 @@ export const PERSON_TOOLS: Tool[] = [
           type: "string",
           description: "City",
         },
+        website: {
+          type: "string",
+          description: "Personal or company website URL",
+        },
+        birthday: {
+          type: "string",
+          description: "Birthday (ISO date, e.g., 1990-05-21)",
+        },
         education: {
           type: "string",
           description: "Education summary (text custom field)",
@@ -70,6 +82,14 @@ export const PERSON_TOOLS: Tool[] = [
         experience: {
           type: "string",
           description: "Experience/notes (custom text field)",
+        },
+        additionalInformation: {
+          type: "string",
+          description: "Additional information (custom text field)",
+        },
+        languages: {
+          type: "string",
+          description: "Languages spoken (comma-separated text)",
         },
       },
       required: ["firstName", "lastName"],
@@ -121,10 +141,22 @@ export const PERSON_TOOLS: Tool[] = [
         phoneCountryCode: { type: "string", description: "Phone country code" },
         phoneCallingCode: { type: "string", description: "Phone calling code" },
         jobTitle: { type: "string", description: "Job title" },
+        title: {
+          type: "string",
+          description: "Alternate title/custom honorific",
+        },
         companyId: { type: "string", description: "Company ID" },
         linkedinUrl: { type: "string", description: "LinkedIn profile URL" },
         xUrl: { type: "string", description: "X/Twitter profile URL" },
         city: { type: "string", description: "City" },
+        website: {
+          type: "string",
+          description: "Personal or company website URL",
+        },
+        birthday: {
+          type: "string",
+          description: "Birthday (ISO date)",
+        },
         education: {
           type: "string",
           description: "Education summary (text custom field)",
@@ -140,6 +172,14 @@ export const PERSON_TOOLS: Tool[] = [
         experience: {
           type: "string",
           description: "Experience/notes (custom text field)",
+        },
+        additionalInformation: {
+          type: "string",
+          description: "Additional information (custom text field)",
+        },
+        languages: {
+          type: "string",
+          description: "Languages spoken (comma-separated text)",
         },
       },
       required: ["id"],

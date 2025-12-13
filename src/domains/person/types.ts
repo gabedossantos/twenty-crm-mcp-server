@@ -21,14 +21,19 @@ export interface CreatePersonInput {
   phoneCountryCode?: string;
   phoneCallingCode?: string;
   jobTitle?: string;
+  title?: string;
   companyId?: string;
   linkedinUrl?: string;
   xUrl?: string;
+  website?: string;
+  birthday?: string;
   city?: string;
   education?: string;
   addresss?: string;
   description?: string;
   experience?: string;
+  additionalInformation?: string;
+  languages?: string;
 }
 
 export interface UpdatePersonInput {
@@ -40,14 +45,19 @@ export interface UpdatePersonInput {
   phoneCountryCode?: string;
   phoneCallingCode?: string;
   jobTitle?: string;
+  title?: string;
   companyId?: string;
   linkedinUrl?: string;
   xUrl?: string;
+  website?: string;
+  birthday?: string;
   city?: string;
   education?: string;
   addresss?: string;
   description?: string;
   experience?: string;
+  additionalInformation?: string;
+  languages?: string;
 }
 
 export interface ListPeopleParams {
@@ -67,12 +77,17 @@ export interface PersonGraphQLInput {
   linkedinLink?: LinkComposite;
   xLink?: LinkComposite;
   jobTitle?: string;
+  title?: string;
   city?: string;
   companyId?: string;
   education?: string;
   addresss?: string;
   description?: string;
   experience?: string;
+  website?: LinkComposite;
+  birthday?: string;
+  additionalInformation?: string;
+  languages?: string;
 }
 
 // ======================
@@ -85,9 +100,12 @@ export interface Person {
   emails?: EmailsComposite;
   phones?: PhonesComposite;
   jobTitle?: string;
+  title?: string;
   city?: string;
   linkedinLink?: LinkComposite;
   xLink?: LinkComposite;
+  website?: LinkComposite;
+  birthday?: string;
   companyId?: string;
   company?: {
     id: string;
@@ -99,6 +117,8 @@ export interface Person {
   experience?: string;
   createdAt: string;
   updatedAt?: string;
+  additionalInformation?: string;
+  languages?: string;
 }
 
 // ======================

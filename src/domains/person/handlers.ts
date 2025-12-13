@@ -56,6 +56,29 @@ async function ensureCustomFieldsAfterCreate({
     missingFields.description = originalInput.description;
   }
 
+  if (
+    originalInput.additionalInformation &&
+    !entity.additionalInformation
+  ) {
+    missingFields.additionalInformation = originalInput.additionalInformation;
+  }
+
+  if (originalInput.languages && !entity.languages) {
+    missingFields.languages = originalInput.languages;
+  }
+
+  if (originalInput.website && !entity.website?.primaryLinkUrl) {
+    missingFields.website = transformLink(originalInput.website);
+  }
+
+  if (originalInput.title && !entity.title) {
+    missingFields.title = originalInput.title;
+  }
+
+  if (originalInput.birthday && !entity.birthday) {
+    missingFields.birthday = originalInput.birthday;
+  }
+
   if (Object.keys(missingFields).length === 0) {
     return;
   }
@@ -93,12 +116,18 @@ function transformCreateInput(data: CreatePersonInput): PersonGraphQLInput {
   if (data.linkedinUrl) input.linkedinLink = transformLink(data.linkedinUrl);
   if (data.xUrl) input.xLink = transformLink(data.xUrl);
   if (data.jobTitle) input.jobTitle = data.jobTitle;
+  if (data.title) input.title = data.title;
   if (data.city) input.city = data.city;
   if (data.companyId) input.companyId = data.companyId;
   if (data.education) input.education = data.education;
   if (data.addresss) input.addresss = data.addresss;
   if (data.description) input.description = data.description;
   if (data.experience) input.experience = data.experience;
+  if (data.website) input.website = transformLink(data.website);
+  if (data.birthday) input.birthday = data.birthday;
+  if (data.additionalInformation)
+    input.additionalInformation = data.additionalInformation;
+  if (data.languages) input.languages = data.languages;
 
   return input;
 }
@@ -133,12 +162,22 @@ function transformUpdateInput(
   if (updates.linkedinUrl) input.linkedinLink = transformLink(updates.linkedinUrl);
   if (updates.xUrl) input.xLink = transformLink(updates.xUrl);
   if (updates.jobTitle !== undefined) input.jobTitle = updates.jobTitle;
+  if (updates.title !== undefined) input.title = updates.title;
   if (updates.city !== undefined) input.city = updates.city;
   if (updates.companyId !== undefined) input.companyId = updates.companyId;
   if (updates.education !== undefined) input.education = updates.education;
   if (updates.addresss !== undefined) input.addresss = updates.addresss;
   if (updates.description !== undefined) input.description = updates.description;
   if (updates.experience !== undefined) input.experience = updates.experience;
+  if (updates.website !== undefined) {
+    input.website = updates.website
+      ? transformLink(updates.website)
+      : undefined;
+  }
+  if (updates.birthday !== undefined) input.birthday = updates.birthday;
+  if (updates.additionalInformation !== undefined)
+    input.additionalInformation = updates.additionalInformation;
+  if (updates.languages !== undefined) input.languages = updates.languages;
 
   return input;
 }

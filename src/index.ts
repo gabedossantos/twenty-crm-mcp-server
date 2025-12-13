@@ -6,13 +6,15 @@
 
 import "./shared/load-env.js";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import { createServer, IncomingMessage, ServerResponse } from "node:http";
 import { realpathSync } from "fs";
-import { pathToFileURL } from "url";
+import { pathToFileURL, URL } from "url";
 
 // Shared utilities
 import { createGraphQLClient, GraphQLClient } from "./shared/graphql-client.js";
@@ -122,12 +124,23 @@ import {
   ListAttachmentsParams,
 } from "./domains/attachment/index.js";
 
+type TransportMode = "stdio" | "http";
+
+type HttpServerConfig = {
+  host: string;
+  port: number;
+  path: string;
+};
+
 /**
  * Main Twenty CRM MCP Server
  */
 class TwentyCRMServer {
   private server: Server;
   private _client: GraphQLClient | null = null;
+  private httpServer?: ReturnType<typeof createServer>;
+  private activeSseTransport?: SSEServerTransport;
+  private activeSseSessionId?: string;
 
   private get client(): GraphQLClient {
     if (!this._client) {
@@ -152,6 +165,11 @@ class TwentyCRMServer {
 
     // Setup handlers
     this.setupToolHandlers();
+
+    this.server.onclose = () => {
+      this.clearActiveSseSession();
+      console.error("MCP SSE client disconnected");
+    };
   }
 
   /**
@@ -416,9 +434,155 @@ class TwentyCRMServer {
    * Start the MCP server
    */
   async run(): Promise<void> {
+    const mode = this.resolveTransportMode();
+    if (mode === "http") {
+      await this.startHttpTransport();
+      return;
+    }
+
+    await this.startStdioTransport();
+  }
+
+  private resolveTransportMode(): TransportMode {
+    const mode = process.env.MCP_TRANSPORT?.toLowerCase();
+    return mode === "http" ? "http" : "stdio";
+  }
+
+  private async startStdioTransport(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error("Twenty CRM MCP Server running on stdio");
+  }
+
+  private async startHttpTransport(): Promise<void> {
+    const config = this.getHttpServerConfig();
+
+    this.httpServer = createServer((req, res) => {
+      void this.routeHttpRequest(req, res, config);
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      const serverRef = this.httpServer;
+      if (!serverRef) {
+        reject(new Error("HTTP server failed to initialize"));
+        return;
+      }
+
+      const onceError = (error: Error) => reject(error);
+      serverRef.once("error", onceError);
+      serverRef.listen(config.port, config.host, () => {
+        serverRef.off("error", onceError);
+        serverRef.on("error", (error) =>
+          console.error("HTTP server error", error)
+        );
+        console.error(
+          `Twenty CRM MCP Server HTTP mode listening on http://${config.host}:${config.port}${config.path}`
+        );
+        resolve();
+      });
+    });
+  }
+
+  private getHttpServerConfig(): HttpServerConfig {
+    const host = process.env.MCP_HTTP_HOST ?? "127.0.0.1";
+    const parsedPort = Number.parseInt(process.env.MCP_HTTP_PORT ?? "", 10);
+    const port = Number.isSafeInteger(parsedPort) && parsedPort > 0 ? parsedPort : 8088;
+    const path = this.normalizeHttpPath(process.env.MCP_HTTP_PATH ?? "/sse");
+    return { host, port, path };
+  }
+
+  private normalizeHttpPath(path: string): string {
+    return path.startsWith("/") ? path : `/${path}`;
+  }
+
+  private async routeHttpRequest(
+    req: IncomingMessage,
+    res: ServerResponse,
+    config: HttpServerConfig
+  ): Promise<void> {
+    const baseUrl = `http://${req.headers.host ?? `${config.host}:${config.port}`}`;
+    const requestUrl = new URL(req.url ?? "/", baseUrl);
+
+    try {
+      if (req.method === "GET" && requestUrl.pathname === config.path) {
+        await this.handleSseHandshake(res, config);
+        return;
+      }
+
+      if (req.method === "POST" && requestUrl.pathname === config.path) {
+        await this.handleSsePost(req, res, requestUrl.searchParams);
+        return;
+      }
+
+      if (req.method === "GET" && requestUrl.pathname === "/healthz") {
+        res.writeHead(200).end("ok");
+        return;
+      }
+
+      res.writeHead(404).end("Not found");
+    } catch (error) {
+      console.error("Failed to handle HTTP request", error);
+      if (!res.headersSent) {
+        res.writeHead(500).end("Internal Server Error");
+      }
+    }
+  }
+
+  private async handleSseHandshake(
+    res: ServerResponse,
+    config: HttpServerConfig
+  ): Promise<void> {
+    if (this.server.transport) {
+      console.error("New SSE connection requested; closing existing client session");
+      await this.teardownActiveSseSession();
+    }
+
+    const transport = new SSEServerTransport(config.path, res);
+
+    await this.server.connect(transport);
+    this.activeSseTransport = transport;
+    this.activeSseSessionId = transport.sessionId;
+    console.error(
+      `MCP SSE client connected (session ${transport.sessionId})`
+    );
+  }
+
+  private async handleSsePost(
+    req: IncomingMessage,
+    res: ServerResponse,
+    params: URLSearchParams
+  ): Promise<void> {
+    const sessionId = params.get("sessionId");
+    if (
+      !sessionId ||
+      sessionId !== this.activeSseSessionId ||
+      !this.activeSseTransport
+    ) {
+      res.writeHead(404).end("Unknown SSE session");
+      return;
+    }
+
+    await this.activeSseTransport.handlePostMessage(req, res);
+  }
+
+  private clearActiveSseSession(): void {
+    this.activeSseSessionId = undefined;
+    this.activeSseTransport = undefined;
+  }
+
+  private async teardownActiveSseSession(): Promise<void> {
+    if (!this.server.transport) {
+      this.clearActiveSseSession();
+      return;
+    }
+
+    try {
+      await this.server.close();
+    } catch (error) {
+      console.error("Failed to close active SSE session", error);
+    } finally {
+      this.clearActiveSseSession();
+    }
   }
 
   // ======================

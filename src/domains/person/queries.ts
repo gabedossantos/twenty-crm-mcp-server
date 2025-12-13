@@ -20,11 +20,19 @@ export const CREATE_PERSON_MUTATION = `
         primaryPhoneCallingCode
       }
       jobTitle
+      title
       city
+      website {
+        primaryLinkLabel
+        primaryLinkUrl
+      }
+      birthday
       education
       addresss
       description
       experience
+      additionalInformation
+      languages
       linkedinLink {
         primaryLinkUrl
       }
@@ -54,7 +62,13 @@ export const GET_PERSON_QUERY = `
         primaryPhoneCallingCode
       }
       jobTitle
+      title
       city
+      website {
+        primaryLinkLabel
+        primaryLinkUrl
+      }
+      birthday
       linkedinLink {
         primaryLinkLabel
         primaryLinkUrl
@@ -72,6 +86,8 @@ export const GET_PERSON_QUERY = `
       addresss
       description
       experience
+      additionalInformation
+      languages
       createdAt
       updatedAt
     }
@@ -95,7 +111,12 @@ export const LIST_PEOPLE_QUERY = `
             primaryPhoneNumber
           }
           jobTitle
+          title
           city
+          website {
+            primaryLinkUrl
+          }
+          birthday
           companyId
           company {
             id
@@ -105,6 +126,8 @@ export const LIST_PEOPLE_QUERY = `
           addresss
           description
           experience
+          additionalInformation
+          languages
         }
       }
       pageInfo {
@@ -130,11 +153,19 @@ export const UPDATE_PERSON_MUTATION = `
         primaryPhoneNumber
       }
       jobTitle
+      title
+      website {
+        primaryLinkLabel
+        primaryLinkUrl
+      }
+      birthday
       city
       education
       addresss
       description
       experience
+      additionalInformation
+      languages
       updatedAt
     }
   }
