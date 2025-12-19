@@ -16,6 +16,10 @@ export const NOTE_TOOLS: Tool[] = [
           type: "string",
           description: "Note body/content in markdown format",
         },
+        personId: {
+          type: "string",
+          description: "The UUID of the Person to link this note to.",
+        },
       },
       required: ["title"],
     },

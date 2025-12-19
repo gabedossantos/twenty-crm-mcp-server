@@ -11,6 +11,7 @@ import { BodyV2Composite } from "../../shared/types.js";
 export interface CreateNoteInput {
   title: string;
   body?: string;
+  personId?: string;
 }
 
 export interface UpdateNoteInput {
@@ -31,6 +32,7 @@ export interface ListNotesParams {
 export interface NoteGraphQLInput {
   title: string;
   bodyV2?: BodyV2Composite;
+  position?: number;
 }
 
 // ======================

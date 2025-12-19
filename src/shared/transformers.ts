@@ -122,6 +122,66 @@ export function transformBodyV2(text: string): BodyV2Composite {
  */
 function convertTextToBlockNote(text: string): string {
   const sanitized = text.replace(/\r/g, "");
+
+  const toInlineNodes = (input: string) => {
+    const nodes: Array<Record<string, unknown>> = [];
+
+    const pushText = (value: string) => {
+      if (!value) return;
+      nodes.push({ type: "text", text: value, styles: {} });
+    };
+
+    // Convert markdown links [text](url) and bare URLs into link nodes
+    const linkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    let cursor = 0;
+    for (const match of input.matchAll(linkRegex)) {
+      const [full, label, href] = match;
+      const start = match.index ?? 0;
+      pushText(input.slice(cursor, start));
+      nodes.push({
+        type: "link",
+        href,
+        content: [{ type: "text", text: label, styles: {} }],
+      });
+      cursor = start + full.length;
+    }
+    pushText(input.slice(cursor));
+
+    // Second pass: turn bare URLs inside text nodes into link nodes
+    const withUrls: Array<Record<string, unknown>> = [];
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    for (const node of nodes) {
+      if (node.type !== "text" || typeof node.text !== "string") {
+        withUrls.push(node);
+        continue;
+      }
+      const textValue = node.text as string;
+      let pos = 0;
+      for (const match of textValue.matchAll(urlRegex)) {
+        const url = match[0];
+        const start = match.index ?? 0;
+        const before = textValue.slice(pos, start);
+        pushInto(withUrls, before);
+        withUrls.push({
+          type: "link",
+          href: url,
+          content: [{ type: "text", text: url, styles: {} }],
+        });
+        pos = start + url.length;
+      }
+      const tail = textValue.slice(pos);
+      pushInto(withUrls, tail);
+    }
+
+    return withUrls;
+
+    function pushInto(arr: Array<Record<string, unknown>>, value: string) {
+      if (value) {
+        arr.push({ type: "text", text: value, styles: {} });
+      }
+    }
+  };
+
   const paragraphs = sanitized
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.trim())
@@ -132,13 +192,7 @@ function convertTextToBlockNote(text: string): string {
       id: `block-${index + 1}`,
       type: "paragraph",
       props: { textAlignment: "left" },
-      content: [
-        {
-          type: "text",
-          text: paragraph,
-          styles: {},
-        },
-      ],
+      content: toInlineNodes(paragraph),
     })
   );
 
