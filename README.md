@@ -252,6 +252,44 @@ curl -i http://host.docker.internal:8088/sse | head
 
 If the curl succeeds, Dify will list all exposed tools automatically. When you omit `MCP_TRANSPORT=http`, the binary continues to launch in stdio mode for Claude Desktop with no configuration changes.
 
+### 🐳 Docker Deployment (Recommended for Production)
+
+For reliable, persistent operation without requiring a terminal session, use Docker:
+
+**Quick Start:**
+```bash
+cd twenty-crm-mcp-server
+
+# Configure your environment
+cat > .env << 'EOF'
+TWENTY_API_KEY=your-api-key-here
+TWENTY_BASE_URL=http://host.docker.internal:3000
+EOF
+
+# Build and start
+docker compose up -d --build
+
+# Verify
+curl http://localhost:8088/healthz
+```
+
+**Benefits:**
+- ✅ Auto-restart on failure or system reboot
+- ✅ Proper signal handling for graceful shutdowns
+- ✅ Health checks for container orchestration
+- ✅ Runs as non-root user for security
+- ✅ Ready for Cloudflare Tunnel integration
+
+**Cloudflare Tunnel:**
+
+Add a public hostname in your tunnel configuration:
+- **Subdomain**: `twenty-mcp.yourdomain.com`
+- **Service**: `http://host.docker.internal:8088`
+
+Then in Dify, use: `https://twenty-mcp.yourdomain.com/sse`
+
+📖 See [DOCKER_DEPLOYMENT.md](./DOCKER_DEPLOYMENT.md) for complete setup guide.
+
 ## 💬 Usage
 
 Once configured, interact with your CRM using natural language:

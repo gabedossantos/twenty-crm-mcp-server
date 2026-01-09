@@ -21,7 +21,6 @@ export interface CreatePersonInput {
   phoneCountryCode?: string;
   phoneCallingCode?: string;
   jobTitle?: string;
-  title?: string;
   companyId?: string;
   linkedinUrl?: string;
   xUrl?: string;
@@ -34,6 +33,11 @@ export interface CreatePersonInput {
   experience?: string;
   additionalInformation?: string;
   languages?: string;
+  followercount?: number;
+  connectioncount?: number;
+  linkedinscore?: number;
+  linkedinLastUpdated?: string;
+  linkedinUrn?: string;
 }
 
 export interface UpdatePersonInput {
@@ -45,7 +49,6 @@ export interface UpdatePersonInput {
   phoneCountryCode?: string;
   phoneCallingCode?: string;
   jobTitle?: string;
-  title?: string;
   companyId?: string;
   linkedinUrl?: string;
   xUrl?: string;
@@ -58,6 +61,11 @@ export interface UpdatePersonInput {
   experience?: string;
   additionalInformation?: string;
   languages?: string;
+  followercount?: number;
+  connectioncount?: number;
+  linkedinscore?: number;
+  linkedinLastUpdated?: string;
+  linkedinUrn?: string;
 }
 
 export interface ListPeopleParams {
@@ -76,8 +84,8 @@ export interface PersonGraphQLInput {
   phones?: PhonesComposite;
   linkedinLink?: LinkComposite;
   xLink?: LinkComposite;
+  imageUrl?: LinkComposite;
   jobTitle?: string;
-  title?: string;
   city?: string;
   companyId?: string;
   education?: string;
@@ -88,6 +96,11 @@ export interface PersonGraphQLInput {
   birthday?: string;
   additionalInformation?: string;
   languages?: string;
+  followercount?: number;
+  connectioncount?: number;
+  linkedinscore?: number;
+  linkedinLastUpdated?: string;
+  linkedinUrn?: string;
 }
 
 // ======================
@@ -100,7 +113,6 @@ export interface Person {
   emails?: EmailsComposite;
   phones?: PhonesComposite;
   jobTitle?: string;
-  title?: string;
   city?: string;
   linkedinLink?: LinkComposite;
   xLink?: LinkComposite;
@@ -119,6 +131,11 @@ export interface Person {
   updatedAt?: string;
   additionalInformation?: string;
   languages?: string;
+  followercount?: number;
+  connectioncount?: number;
+  linkedinscore?: number;
+  linkedinLastUpdated?: string;
+  linkedinUrn?: string;
 }
 
 // ======================

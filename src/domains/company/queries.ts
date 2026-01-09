@@ -30,6 +30,8 @@ export const CREATE_COMPANY_MUTATION = `
         currencyCode
       }
       idealCustomerProfile
+      ats
+      lastAtsRun
       createdAt
     }
   }
@@ -63,6 +65,10 @@ export const GET_COMPANY_QUERY = `
         currencyCode
       }
       idealCustomerProfile
+      ats {
+        primaryLinkUrl
+      }
+      lastAtsRun
       createdAt
       updatedAt
     }
@@ -124,6 +130,10 @@ export const UPDATE_COMPANY_MUTATION = `
         amountMicros
         currencyCode
       }
+      ats {
+        primaryLinkUrl
+      }
+      lastAtsRun
       updatedAt
     }
   }

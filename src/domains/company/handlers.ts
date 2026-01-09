@@ -54,6 +54,8 @@ function transformCreateInput(data: CreateCompanyInput): CompanyGraphQLInput {
   if (data.employees !== undefined) input.employees = data.employees;
   if (data.idealCustomerProfile !== undefined)
     input.idealCustomerProfile = data.idealCustomerProfile;
+  if (data.ats !== undefined) input.ats = transformLink(data.ats);
+  if (data.lastAtsRun !== undefined) input.lastAtsRun = data.lastAtsRun;
 
   return input;
 }
@@ -101,6 +103,8 @@ function transformUpdateInput(
   if (updates.employees !== undefined) input.employees = updates.employees;
   if (updates.idealCustomerProfile !== undefined)
     input.idealCustomerProfile = updates.idealCustomerProfile;
+  if (updates.ats !== undefined) input.ats = transformLink(updates.ats);
+  if (updates.lastAtsRun !== undefined) input.lastAtsRun = updates.lastAtsRun;
 
   return input;
 }

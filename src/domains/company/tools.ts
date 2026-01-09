@@ -35,6 +35,14 @@ export const COMPANY_TOOLS: Tool[] = [
           type: "boolean",
           description: "Is this an ideal customer profile",
         },
+        ats: {
+          type: "string",
+          description: "Applicant Tracking System (ATS) name or identifier",
+        },
+        lastAtsRun: {
+          type: "string",
+          description: "Last ATS run date/timestamp (ISO 8601 format)",
+        },
       },
       required: ["name"],
     },
@@ -91,6 +99,14 @@ export const COMPANY_TOOLS: Tool[] = [
         },
         currency: { type: "string", description: "Currency code" },
         idealCustomerProfile: { type: "boolean", description: "Is ICP" },
+        ats: {
+          type: "string",
+          description: "Applicant Tracking System (ATS) name or identifier",
+        },
+        lastAtsRun: {
+          type: "string",
+          description: "Last ATS run date/timestamp (ISO 8601 format)",
+        },
       },
       required: ["id"],
     },

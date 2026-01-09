@@ -39,10 +39,6 @@ export const PERSON_TOOLS: Tool[] = [
           type: "string",
           description: "Job title",
         },
-        title: {
-          type: "string",
-          description: "Alternate title/custom honorific",
-        },
         companyId: {
           type: "string",
           description: "Company ID to associate with",
@@ -90,6 +86,26 @@ export const PERSON_TOOLS: Tool[] = [
         languages: {
           type: "string",
           description: "Languages spoken (comma-separated text)",
+        },
+        followercount: {
+          type: "number",
+          description: "LinkedIn follower count",
+        },
+        connectioncount: {
+          type: "number",
+          description: "LinkedIn connection count",
+        },
+        linkedinscore: {
+          type: "number",
+          description: "Profile completeness score (0-100)",
+        },
+        linkedinLastUpdated: {
+          type: "string",
+          description: "Date/time LinkedIn data was last updated (ISO 8601)",
+        },
+        linkedinUrn: {
+          type: "string",
+          description: "LinkedIn URN identifier (e.g., urn:li:person:xxxx)",
         },
       },
       required: ["firstName", "lastName"],
@@ -141,10 +157,6 @@ export const PERSON_TOOLS: Tool[] = [
         phoneCountryCode: { type: "string", description: "Phone country code" },
         phoneCallingCode: { type: "string", description: "Phone calling code" },
         jobTitle: { type: "string", description: "Job title" },
-        title: {
-          type: "string",
-          description: "Alternate title/custom honorific",
-        },
         companyId: { type: "string", description: "Company ID" },
         linkedinUrl: { type: "string", description: "LinkedIn profile URL" },
         xUrl: { type: "string", description: "X/Twitter profile URL" },
@@ -181,8 +193,48 @@ export const PERSON_TOOLS: Tool[] = [
           type: "string",
           description: "Languages spoken (comma-separated text)",
         },
+        followercount: {
+          type: "number",
+          description: "LinkedIn follower count",
+        },
+        connectioncount: {
+          type: "number",
+          description: "LinkedIn connection count",
+        },
+        linkedinscore: {
+          type: "number",
+          description: "Profile completeness score (0-100)",
+        },
+        linkedinLastUpdated: {
+          type: "string",
+          description: "Date/time LinkedIn data was last updated (ISO 8601)",
+        },
+        linkedinUrn: {
+          type: "string",
+          description: "LinkedIn URN identifier (e.g., urn:li:person:xxxx)",
+        },
       },
       required: ["id"],
+    },
+  },
+  {
+    name: "import_linkedin_profile",
+    description:
+      "Import and parse a LinkedIn profile from Apify scraper JSON output. Automatically extracts all fields, formats experience/education/certifications as Markdown, calculates profile score, and updates the person record. Returns a summary of what was imported.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        personId: {
+          type: "string",
+          description: "Twenty CRM Person ID to update with LinkedIn data",
+        },
+        apifyData: {
+          type: "string",
+          description:
+            "Raw JSON string from Apify LinkedIn Profile Scraper. Can be the full response array or a single profile object.",
+        },
+      },
+      required: ["personId", "apifyData"],
     },
   },
 ];

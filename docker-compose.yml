@@ -1,0 +1,64 @@
+# Twenty CRM MCP Server - Docker Compose Configuration
+# 
+# Usage:
+#   docker compose up -d              # Start the server
+#   docker compose logs -f            # View logs
+#   docker compose down               # Stop the server
+#   docker compose up -d --build      # Rebuild and start
+#
+# For Cloudflare Tunnel integration, add this service to your
+# existing tunnel's docker-compose.yml or configure the tunnel
+# to route to this container's network.
+
+services:
+  twenty-crm-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: twenty-crm-mcp
+    restart: unless-stopped
+    
+    # Environment configuration
+    environment:
+      # MCP Server Configuration
+      - MCP_TRANSPORT=http
+      - MCP_HTTP_HOST=0.0.0.0
+      - MCP_HTTP_PORT=8088
+      - MCP_HTTP_PATH=/sse
+      
+      # Twenty CRM Configuration (required)
+      - TWENTY_API_KEY=${TWENTY_API_KEY}
+      - TWENTY_BASE_URL=${TWENTY_BASE_URL:-http://host.docker.internal:3000}
+    
+    # Port mapping - adjust if 8088 conflicts
+    ports:
+      - "8088:8088"
+    
+    # Health check (use 127.0.0.1 to avoid IPv6 issues)
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8088/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # For accessing host services (like Twenty CRM on localhost)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    
+    # Optional: Connect to existing networks (e.g., Cloudflare tunnel network)
+    # networks:
+    #   - cloudflare-tunnel
+
+# Optional: Define external networks for Cloudflare tunnel integration
+# networks:
+#   cloudflare-tunnel:
+#     external: true
+#     name: your-cloudflare-tunnel-network

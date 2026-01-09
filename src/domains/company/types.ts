@@ -27,6 +27,8 @@ export interface CreateCompanyInput {
   annualRecurringRevenue?: number;
   currency?: string;
   idealCustomerProfile?: boolean;
+  ats?: string;
+  lastAtsRun?: string;
 }
 
 export interface UpdateCompanyInput {
@@ -45,6 +47,8 @@ export interface UpdateCompanyInput {
   annualRecurringRevenue?: number;
   currency?: string;
   idealCustomerProfile?: boolean;
+  ats?: string;
+  lastAtsRun?: string;
 }
 
 export interface ListCompaniesParams {
@@ -65,6 +69,8 @@ export interface CompanyGraphQLInput {
   xLink?: LinkComposite;
   annualRecurringRevenue?: CurrencyComposite;
   idealCustomerProfile?: boolean;
+  ats?: LinkComposite;
+  lastAtsRun?: string;
 }
 
 // ======================
@@ -81,6 +87,8 @@ export interface Company {
   xLink?: LinkComposite;
   annualRecurringRevenue?: CurrencyComposite;
   idealCustomerProfile?: boolean;
+  ats?: LinkComposite;
+  lastAtsRun?: string;
   createdAt: string;
   updatedAt?: string;
 }

@@ -71,10 +71,6 @@ async function ensureCustomFieldsAfterCreate({
     missingFields.website = transformLink(originalInput.website);
   }
 
-  if (originalInput.title && !entity.title) {
-    missingFields.title = originalInput.title;
-  }
-
   if (originalInput.birthday && !entity.birthday) {
     missingFields.birthday = originalInput.birthday;
   }
@@ -116,7 +112,6 @@ function transformCreateInput(data: CreatePersonInput): PersonGraphQLInput {
   if (data.linkedinUrl) input.linkedinLink = transformLink(data.linkedinUrl);
   if (data.xUrl) input.xLink = transformLink(data.xUrl);
   if (data.jobTitle) input.jobTitle = data.jobTitle;
-  if (data.title) input.title = data.title;
   if (data.city) input.city = data.city;
   if (data.companyId) input.companyId = data.companyId;
   if (data.education) input.education = data.education;
@@ -128,6 +123,11 @@ function transformCreateInput(data: CreatePersonInput): PersonGraphQLInput {
   if (data.additionalInformation)
     input.additionalInformation = data.additionalInformation;
   if (data.languages) input.languages = data.languages;
+  if (data.followercount !== undefined) input.followercount = data.followercount;
+  if (data.connectioncount !== undefined) input.connectioncount = data.connectioncount;
+  if (data.linkedinscore !== undefined) input.linkedinscore = data.linkedinscore;
+  if (data.linkedinLastUpdated !== undefined) input.linkedinLastUpdated = data.linkedinLastUpdated;
+  if (data.linkedinUrn !== undefined) input.linkedinUrn = data.linkedinUrn;
 
   return input;
 }
@@ -162,7 +162,6 @@ function transformUpdateInput(
   if (updates.linkedinUrl) input.linkedinLink = transformLink(updates.linkedinUrl);
   if (updates.xUrl) input.xLink = transformLink(updates.xUrl);
   if (updates.jobTitle !== undefined) input.jobTitle = updates.jobTitle;
-  if (updates.title !== undefined) input.title = updates.title;
   if (updates.city !== undefined) input.city = updates.city;
   if (updates.companyId !== undefined) input.companyId = updates.companyId;
   if (updates.education !== undefined) input.education = updates.education;
@@ -178,6 +177,11 @@ function transformUpdateInput(
   if (updates.additionalInformation !== undefined)
     input.additionalInformation = updates.additionalInformation;
   if (updates.languages !== undefined) input.languages = updates.languages;
+  if (updates.followercount !== undefined) input.followercount = updates.followercount;
+  if (updates.connectioncount !== undefined) input.connectioncount = updates.connectioncount;
+  if (updates.linkedinscore !== undefined) input.linkedinscore = updates.linkedinscore;
+  if (updates.linkedinLastUpdated !== undefined) input.linkedinLastUpdated = updates.linkedinLastUpdated;
+  if (updates.linkedinUrn !== undefined) input.linkedinUrn = updates.linkedinUrn;
 
   return input;
 }

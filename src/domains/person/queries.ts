@@ -20,7 +20,6 @@ export const CREATE_PERSON_MUTATION = `
         primaryPhoneCallingCode
       }
       jobTitle
-      title
       city
       website {
         primaryLinkLabel
@@ -33,6 +32,11 @@ export const CREATE_PERSON_MUTATION = `
       experience
       additionalInformation
       languages
+      followercount
+      connectioncount
+      linkedinscore
+      linkedinLastUpdated
+      linkedinUrn
       linkedinLink {
         primaryLinkUrl
       }
@@ -62,7 +66,6 @@ export const GET_PERSON_QUERY = `
         primaryPhoneCallingCode
       }
       jobTitle
-      title
       city
       website {
         primaryLinkLabel
@@ -88,6 +91,11 @@ export const GET_PERSON_QUERY = `
       experience
       additionalInformation
       languages
+      followercount
+      connectioncount
+      linkedinscore
+      linkedinLastUpdated
+      linkedinUrn
       createdAt
       updatedAt
     }
@@ -111,7 +119,6 @@ export const LIST_PEOPLE_QUERY = `
             primaryPhoneNumber
           }
           jobTitle
-          title
           city
           website {
             primaryLinkUrl
@@ -128,6 +135,11 @@ export const LIST_PEOPLE_QUERY = `
           experience
           additionalInformation
           languages
+          followercount
+          connectioncount
+          linkedinscore
+          linkedinLastUpdated
+          linkedinUrn
         }
       }
       pageInfo {
@@ -153,8 +165,11 @@ export const UPDATE_PERSON_MUTATION = `
         primaryPhoneNumber
       }
       jobTitle
-      title
       website {
+        primaryLinkLabel
+        primaryLinkUrl
+      }
+      imageUrl {
         primaryLinkLabel
         primaryLinkUrl
       }
@@ -166,6 +181,11 @@ export const UPDATE_PERSON_MUTATION = `
       experience
       additionalInformation
       languages
+      followercount
+      connectioncount
+      linkedinscore
+      linkedinLastUpdated
+      linkedinUrn
       updatedAt
     }
   }

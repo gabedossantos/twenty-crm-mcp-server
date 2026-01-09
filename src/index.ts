@@ -26,9 +26,11 @@ import {
   getPerson,
   listPeople,
   updatePerson,
+  importLinkedInProfile,
   CreatePersonInput,
   UpdatePersonInput,
   ListPeopleParams,
+  ImportLinkedInProfileInput,
 } from "./domains/person/index.js";
 
 import {
@@ -154,7 +156,7 @@ class TwentyCRMServer {
     this.server = new Server(
       {
         name: "twenty-crm",
-        version: "0.6.0",
+        version: "0.8.2",
       },
       {
         capabilities: {
@@ -222,6 +224,23 @@ class TwentyCRMServer {
               this.client,
               args as unknown as UpdatePersonInput
             );
+          case "import_linkedin_profile": {
+            const importResult = await importLinkedInProfile(
+              this.client,
+              args as unknown as ImportLinkedInProfileInput
+            );
+            // Return both text summary and structured JSON for Dify
+            return {
+              content: [
+                ...importResult.content,
+                {
+                  type: "text",
+                  text: `\n\n---\n\n**Structured Output (JSON):**\n\`\`\`json\n${JSON.stringify(importResult.structuredData, null, 2)}\n\`\`\``,
+                },
+              ],
+              isError: importResult.isError,
+            };
+          }
 
           // Company operations
           case "create_company":
