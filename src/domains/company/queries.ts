@@ -30,7 +30,9 @@ export const CREATE_COMPANY_MUTATION = `
         currencyCode
       }
       idealCustomerProfile
-      ats
+      ats {
+        primaryLinkUrl
+      }
       lastAtsRun
       createdAt
     }

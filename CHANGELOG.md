@@ -4,6 +4,21 @@ This document tracks all versions, changes, and upgrade notes for the Twenty CRM
 
 ---
 
+## Version 0.8.3 (January 14, 2026) - GraphQL Relation Field Fix
+
+### 🐛 Bug Fixes
+- **Fixed `createCompany` GraphQL mutation error**: Resolved "Field 'ats' of type 'Links' must have a selection of subfields" error
+  - Changed `ats` field in `CREATE_COMPANY_MUTATION` from scalar to properly expanded relation field `ats { primaryLinkUrl }`
+  - Now matches the pattern used in `GET_COMPANY_QUERY` and `UPDATE_COMPANY_MUTATION`
+  - Fixes issue where creating companies with ATS field would fail with GraphQL validation error
+
+### 📝 Technical Details
+- **File modified**: `src/domains/company/queries.ts`
+- **Impact**: The `create_company` tool now correctly handles the `ats` relation field when creating new companies
+- **Breaking Changes**: None - this is a backward-compatible bug fix
+
+---
+
 ## Version 0.8.2 (December 25, 2025) - Complete Data Extraction
 
 ### 📦 Full Data Preservation
